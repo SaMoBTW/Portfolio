@@ -1,4 +1,3 @@
-import React from "react";
 // import Portfolio from "./ONEPAGE";
 import Portfolio from "./ONEPAGE copy";
 
