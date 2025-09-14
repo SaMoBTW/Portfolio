@@ -1,4 +1,4 @@
-# 🌌 Portfolio Website
+# Portfolio Website
 
 My personal portfolio website built with **React + TypeScript** (frontend) and planned **Spring Boot** backend.  
 Showcasing my projects, resume, and an admin dashboard for managing content.
