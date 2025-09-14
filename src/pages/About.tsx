@@ -14,7 +14,7 @@ import {
   MapPin,
   Calendar,
 } from "lucide-react";
-import { skills } from "../data/Skills";
+import { skills } from "../data/skills";
 
 const AboutPage: React.FC = () => {
   return (

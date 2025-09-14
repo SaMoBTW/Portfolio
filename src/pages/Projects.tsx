@@ -14,7 +14,7 @@ import {
   MapPin,
   Calendar,
 } from "lucide-react";
-import { projects } from "../data/Projects";
+import { projects } from "../data/projects";
 
 const ProjectsPage: React.FC = () => {
   return (
