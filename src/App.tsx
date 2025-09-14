@@ -1,11 +1,9 @@
+import React from "react";
+// import Portfolio from "./ONEPAGE";
+import Portfolio from "./ONEPAGE copy";
+
 function App() {
-  return (
-    <>
-      <body class="bg-gray-800">
-        <p class="text-white">Home Page</p>
-      </body>
-    </>
-  );
+  return <Portfolio />;
 }
 
 export default App;
