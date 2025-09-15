@@ -16,7 +16,7 @@ const Navigation: React.FC<Props> = ({ currentPage, setCurrentPage }) => {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`capitalize transition-colors ${
+                className={`capitalize transition-colors cursor-pointer hover:cursor-pointer ${
                   currentPage === page
                     ? "text-blue-400"
                     : "text-gray-300 hover:text-white"

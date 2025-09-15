@@ -1,5 +1,5 @@
 // import Portfolio from "./OnePage";
-import Portfolio from "./OnePageCopy";
+import Portfolio from "./Portfolio";
 
 function App() {
   return <Portfolio />;
