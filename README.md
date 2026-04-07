@@ -1,28 +1,11 @@
-# Portfolio Website
 
-My personal portfolio website built with **React + TypeScript** (frontend) and planned **Spring Boot** backend.  
-Showcasing my projects, resume, and an admin dashboard for managing content.
+  # Personal Portfolio Website Design
 
----
+  This is a code bundle for Personal Portfolio Website Design. The original project is available at https://www.figma.com/design/aQZQHZ6rJGlUHNbOzB4oYt/Personal-Portfolio-Website-Design.
 
-## 🚀 Features
-- Minimal dark-themed UI  
-- About Me & Resume section  
-- Projects page with GitHub/live links  
-- Admin page (CRUD for projects, secure login planned)  
-- Responsive design  
+  ## Running the code
 
----
+  Run `npm i` to install the dependencies.
 
-## 🛠 Tech Stack
-- **Frontend:** React (TS), Tailwind CSS, Lucide Icons  
-- **Backend (planned):** Spring Boot, PostgreSQL, JWT  
-
----
-
-## ⚡ Quick Start
-```bash
-git clone https://github.com/your-username/portfolio.git
-cd portfolio
-npm install
-npm run dev
+  Run `npm run dev` to start the development server.
+  
