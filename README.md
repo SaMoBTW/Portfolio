@@ -1,11 +1,65 @@
+# Personal Portfolio Website
 
-  # Personal Portfolio Website Design
+A modern, interactive personal portfolio designed to showcase projects, skills, and experience with style. Built with React, Vite, and Tailwind CSS, featuring rich animations and a fully functional admin dashboard ready for backend integration via Supabase.
 
-  This is a code bundle for Personal Portfolio Website Design. The original project is available at https://www.figma.com/design/aQZQHZ6rJGlUHNbOzB4oYt/Personal-Portfolio-Website-Design.
+## 🚀 Features
 
-  ## Running the code
+- **Modern & Responsive Design**: Crafted with a mobile-first approach using Tailwind CSS.
+- **Rich Animations & Micro-interactions**: Powered by Motion for smooth page transitions and interactive elements.
+- **Admin Dashboard**: Manage projects, messages, workspace images, and site settings directly from an integrated admin panel.
+- **Backend-Ready (Supabase)**: Comes with a complete `BACKEND_INTEGRATION_README.md` and integration guides to seamlessly hook up a Supabase PostgreSQL database for persistent CRUD operations and Row-Level Security.
+- **Accessible Components**: Utilizes Radix UI primitives for high-quality, accessible interactive components.
 
-  Run `npm i` to install the dependencies.
+## 🛠️ Tech Stack
 
-  Run `npm run dev` to start the development server.
-  
+- **Frontend Framework**: React 18
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS v4, Shadcn UI (Customized Radix UI)
+- **Routing**: React Router
+- **Animations**: Motion
+- **Icons**: Lucide React
+- **Data Visualization**: Recharts
+- **Forms & Validation**: React Hook Form
+
+## 💻 Getting Started
+
+To get a local copy up and running
+
+### Prerequisites
+
+You will need Node.js and npm installed on your machine.
+
+### Installation
+
+1. Clone the repository
+
+   ```bash
+   git clone https://github.com/SaMoBTW/Portfolio.git
+   ```
+
+2. Navigate into the project directory
+
+   ```bash
+   cd Portfolio-1
+   ```
+
+3. Install NPM packages
+
+   ```bash
+   npm install
+   ```
+
+4. Start the development server
+   ```bash
+   npm run dev
+   ```
+
+## 🏗️ Backend Integration (Supabase)
+
+This project is fully prepared to be integrated with Supabase for backend data storage, file handling (images/albums), and user authentication.
+
+Please refer to the `BACKEND_INTEGRATION_README.md` and `/src/app/lib/SUPABASE_INTEGRATION_GUIDE.ts` inside the codebase. They provide step-by-step instructions on running the SQL migrations, setting up storage buckets, and connecting your local `.env` keys.
+
+## 📝 License
+
+This project is open-source and available under the terms of the MIT License.
