@@ -4,10 +4,9 @@ A modern, interactive personal portfolio designed to showcase projects, skills, 
 
 ## 🚀 Features
 
-- **Modern & Responsive Design**: Crafted with a mobile-first approach using Tailwind CSS.
-- **Rich Animations & Micro-interactions**: Powered by Motion for smooth page transitions and interactive elements.
+- **Modern & Responsive Design**
+- **Tasteful Animations & Micro-interactions**: Powered by Motion for smooth page transitions and interactive elements.
 - **Admin Dashboard**: Manage projects, messages, workspace images, and site settings directly from an integrated admin panel.
-- **Backend-Ready (Supabase)**: Comes with a complete `BACKEND_INTEGRATION_README.md` and integration guides to seamlessly hook up a Supabase PostgreSQL database for persistent CRUD operations and Row-Level Security.
 - **Accessible Components**: Utilizes Radix UI primitives for high-quality, accessible interactive components.
 
 ## 🛠️ Tech Stack
