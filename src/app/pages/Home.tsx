@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import profileImg from "../../assets/d7db82655c6674b4948dd2ab7cad4334dee31f29.png";
 import { useAsync } from "../hooks";
 import { supabase } from "../lib/supabase";
+import { TerminalVisual } from "../components/TerminalVisual";
 
 export function Home() {
   const { data: settingsData } = useAsync(async () => {
@@ -289,7 +290,64 @@ export function Home() {
           </div>
 
           <div className="space-y-12">
-            {featuredProjects?.map((project: any, index: number) => (
+            {featuredProjects?.map((project: any, index: number) => {
+              if (project.title?.trim().toLowerCase() === 'home media server') {
+                return (
+                  <motion.div
+                    key={project.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="relative group"
+                  >
+                    {/* Desktop Layout */}
+                    <div className="hidden md:block relative rounded-lg overflow-hidden border border-primary/20 bg-background/40 backdrop-blur-sm hover:border-primary/50 transition-colors duration-300">
+                      <div className={`relative h-[400px] w-full p-8 flex items-center gap-8 ${index % 2 !== 0 ? 'flex-row-reverse' : ''}`}>
+                        {/* Terminal Dashboard - Floating Window typically on Left */}
+                        <div className="w-[55%] h-full flex items-start">
+                          <TerminalVisual />
+                        </div>
+      
+                        {/* Project Description */}
+                        <div className="w-[45%] flex flex-col justify-start pr-4">
+                          <p className="text-primary font-mono text-sm mb-3">Featured Project</p>
+                          <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 font-mono">{project.title}</h3>
+                          <p className="text-slate-300 leading-relaxed mb-6">
+                            {project.description}
+                          </p>
+                          <div className="flex flex-wrap gap-3 font-mono text-sm text-gray-400">
+                            {project.technologies?.map((tech: string) => (
+                              <span key={tech}>{tech}</span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+      
+                    {/* Mobile Layout */}
+                    <div className="md:hidden rounded-lg overflow-hidden border border-primary/20 bg-background/40 backdrop-blur-sm">
+                      <div className="w-full p-4 bg-[#0a0a1a]">
+                        <TerminalVisual />
+                      </div>
+                      <div className="p-6 bg-[#0a0a1a] border-t border-primary/10">
+                        <p className="text-primary font-mono text-xs mb-2">Featured Project</p>
+                        <h3 className="text-2xl font-bold text-white mb-3 font-mono">{project.title}</h3>
+                        <p className="text-slate-300 leading-relaxed mb-4 text-sm">
+                          {project.description}
+                        </p>
+                        <div className="flex flex-wrap gap-2 font-mono text-xs text-gray-400">
+                          {project.technologies?.map((tech: string) => (
+                            <span key={tech}>{tech}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              }
+
+              return (
               <motion.div
                 key={project.id}
                 initial={{ opacity: 0, y: 30 }}
@@ -356,7 +414,8 @@ export function Home() {
                   </div>
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
 
           <motion.div
