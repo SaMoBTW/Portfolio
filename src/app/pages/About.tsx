@@ -2,45 +2,23 @@ import { motion } from "motion/react";
 import Masonry from "react-responsive-masonry";
 import { FileCode } from "lucide-react";
 import profileImg from "../../assets/d7db82655c6674b4948dd2ab7cad4334dee31f29.png";
+import { useAsync } from "../hooks";
+import { supabase } from "../lib/supabase";
 
 export function About() {
-  // Workspace Evolution images with varying heights
-  const workspaceImages = [
-    {
-      url: "https://images.unsplash.com/photo-1555209183-8facf96a4349?w=600&q=80",
-      height: "h-64",
-      caption: "2020 - The Beginning",
-    },
-    {
-      url: "https://images.unsplash.com/photo-1644337540803-2b2fb3cebf12?w=600&q=80",
-      height: "h-80",
-      caption: "2021 - Minimalist Phase",
-    },
-    {
-      url: "https://images.unsplash.com/photo-1623281185000-6940e5347d2e?w=600&q=80",
-      height: "h-72",
-      caption: "2023 - Multi-monitor Setup",
-    },
-    {
-      url: "https://images.unsplash.com/photo-1648241776507-7e3ae32698e6?w=600&q=80",
-      height: "h-96",
-      caption: "2024 - Current Setup",
-    },
-  ];
+  const { data: workspaceImagesData } = useAsync(async () => {
+    const { data, error } = await supabase.from('workspace_images').select('*').order('order_index', { ascending: true });
+    if (error) throw error;
+    return data || [];
+  });
+  const workspaceImages = workspaceImagesData || [];
 
-  // Album covers for infinite marquee
-  const albums = [
-    { url: "https://images.unsplash.com/photo-1773408285355-a1d4a141ea1a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoaXAlMjBob3AlMjByYXAlMjBhbGJ1bSUyMGNvdmVyJTIwYXJ0fGVufDF8fHx8MTc3NTUwNDM2NHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral", title: "Octane - Don Toliver" },
-    { url: "https://images.unsplash.com/photo-1609793463612-db1954fbfb34?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxKJTIwQ29sZSUyMGhpcCUyMGhvcCUyMGFydGlzdCUyMGNvbmNlcnR8ZW58MXx8fHwxNzc1NTA0NTkyfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral", title: "The Off-Season - J. Cole" },
-    { url: "https://images.unsplash.com/photo-1644855640845-ab57a047320e?w=300&q=80", title: "Album 1" },
-    { url: "https://images.unsplash.com/photo-1638109879562-1f98abe0d45f?w=300&q=80", title: "Album 2" },
-    { url: "https://images.unsplash.com/photo-1631692364524-f369d797b107?w=300&q=80", title: "Album 3" },
-    { url: "https://images.unsplash.com/photo-1619983081563-430f63602796?w=300&q=80", title: "Album 4" },
-    { url: "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=300&q=80", title: "Album 5" },
-    { url: "https://images.unsplash.com/photo-1619983081563-430f63602796?w=300&q=80", title: "Album 6" },
-    { url: "https://images.unsplash.com/photo-1579082198414-4f5c7cccce12?w=300&q=80", title: "Album 7" },
-    { url: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300&q=80", title: "Album 8" },
-  ];
+  const { data: albumsData } = useAsync(async () => {
+    const { data, error } = await supabase.from('albums').select('*').order('order_index', { ascending: true });
+    if (error) throw error;
+    return data || [];
+  });
+  const albums = albumsData || [];
 
   // Tech creator avatars
   const creators = [
@@ -175,9 +153,9 @@ export function About() {
             transition={{ duration: 0.6 }}
           >
             <Masonry columnsCount={3} gutter="1rem">
-              {workspaceImages.map((image, index) => (
+              {workspaceImages.map((image: any, index: number) => (
                 <motion.div
-                  key={index}
+                  key={image.id || index}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -187,26 +165,20 @@ export function About() {
                     boxShadow:
                       "0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 rgba(167, 139, 250, 0.3)",
                   }}
-                  onMouseEnter={(e) => {
+                  onMouseEnter={(e: any) => {
                     e.currentTarget.style.boxShadow =
                       "0 4px 16px rgba(0, 0, 0, 0.3), 0 0 30px rgba(167, 139, 250, 0.6)";
                   }}
-                  onMouseLeave={(e) => {
+                  onMouseLeave={(e: any) => {
                     e.currentTarget.style.boxShadow =
                       "0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 rgba(167, 139, 250, 0.3)";
                   }}
                 >
                   <img
                     src={image.url}
-                    alt={image.caption}
+                    alt={"Workspace"}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  {/* Caption Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <p className="text-white font-mono text-sm">{image.caption}</p>
-                    </div>
-                  </div>
                 </motion.div>
               ))}
             </Masonry>
@@ -249,9 +221,9 @@ export function About() {
           {/* Scrolling Marquee */}
           <div className="flex animate-marquee">
             {/* First set */}
-            {albums.map((album, index) => (
+            {albums.map((album: any, index: number) => (
               <div
-                key={`album-1-${index}`}
+                key={`album-1-${album.id || index}`}
                 className="flex-shrink-0 w-48 h-48 mx-3 rounded-lg overflow-hidden border border-primary/20 group hover:border-primary/50 transition-all duration-300"
                 style={{
                   boxShadow: "0 4px 16px rgba(0, 0, 0, 0.4)",
@@ -265,9 +237,9 @@ export function About() {
               </div>
             ))}
             {/* Duplicate set for seamless loop */}
-            {albums.map((album, index) => (
+            {albums.map((album: any, index: number) => (
               <div
-                key={`album-2-${index}`}
+                key={`album-2-${album.id || index}`}
                 className="flex-shrink-0 w-48 h-48 mx-3 rounded-lg overflow-hidden border border-primary/20 group hover:border-primary/50 transition-all duration-300"
                 style={{
                   boxShadow: "0 4px 16px rgba(0, 0, 0, 0.4)",

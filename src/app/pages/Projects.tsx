@@ -1,62 +1,17 @@
 import { motion } from "motion/react";
 import { ExternalLink, Github, Folder } from "lucide-react";
+import { useAsync } from "../hooks";
+import { supabase } from "../lib/supabase";
 
 export function Projects() {
-  const featuredProjects = [
-    {
-      title: "E-Commerce Platform",
-      description:
-        "A full-stack e-commerce solution with real-time inventory management, secure payment processing, and a comprehensive admin dashboard. Built with modern technologies and best practices.",
-      image: "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&q=80",
-      tags: ["React", "Node.js", "PostgreSQL", "Stripe"],
-      link: "#",
-      github: "#",
-    },
-    {
-      title: "Analytics Dashboard",
-      description:
-        "Real-time analytics platform with customizable widgets, interactive data visualization, and comprehensive reporting tools. Designed for data-driven decision making.",
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
-      tags: ["Next.js", "D3.js", "GraphQL", "PostgreSQL"],
-      link: "#",
-      github: "#",
-    },
-  ];
+  const { data: projectsData } = useAsync(async () => {
+    const { data, error } = await supabase.from('projects').select('*').eq('status', 'Published').order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  });
 
-  const otherProjects = [
-    {
-      title: "Task Management App",
-      description:
-        "Cross-platform mobile app for team collaboration and project tracking with offline support.",
-      tags: ["React Native", "TypeScript", "Firebase"],
-      link: "#",
-      github: "#",
-    },
-    {
-      title: "Design System",
-      description:
-        "Comprehensive design system with reusable components, documentation, and Figma integration.",
-      tags: ["React", "Storybook", "Figma", "Tailwind"],
-      link: "#",
-      github: "#",
-    },
-    {
-      title: "Open Source CLI Tool",
-      description:
-        "Developer productivity tool for scaffolding projects and automating workflows.",
-      tags: ["Node.js", "TypeScript", "Commander.js"],
-      link: "#",
-      github: "#",
-    },
-    {
-      title: "Portfolio Website Builder",
-      description:
-        "No-code platform for creatives to build and customize their portfolio websites.",
-      tags: ["React", "Tailwind", "Supabase"],
-      link: "#",
-      github: "#",
-    },
-  ];
+  const featuredProjects = projectsData?.filter((p: any) => p.featured_on_homepage) || [];
+  const otherProjects = projectsData?.filter((p: any) => !p.featured_on_homepage) || [];
 
   return (
     <div className="pt-20">
@@ -88,9 +43,9 @@ export function Projects() {
       <section className="pb-32">
         <div className="mx-auto max-w-6xl px-6 lg:px-8">
           <div className="space-y-32">
-            {featuredProjects.map((project, index) => (
+            {featuredProjects.map((project: any, index: number) => (
               <motion.div
-                key={project.title}
+                key={project.id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -110,7 +65,7 @@ export function Projects() {
                   >
                     <div className="relative rounded overflow-hidden bg-primary/5">
                       <img
-                        src={project.image}
+                        src={project.image_url || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80"}
                         alt={project.title}
                         className="w-full aspect-video object-cover opacity-50 group-hover:opacity-100 transition-opacity duration-300"
                       />
@@ -136,7 +91,7 @@ export function Projects() {
                         index % 2 === 1 ? "" : "md:justify-end"
                       }`}
                     >
-                      {project.tags.map((tag) => (
+                      {project.technologies?.map((tag: string) => (
                         <span key={tag}>{tag}</span>
                       ))}
                     </div>
@@ -145,20 +100,24 @@ export function Projects() {
                         index % 2 === 1 ? "" : "md:justify-end"
                       }`}
                     >
-                      <a
-                        href={project.github}
-                        className="text-foreground hover:text-primary transition-colors"
-                        aria-label="GitHub"
-                      >
-                        <Github size={20} />
-                      </a>
-                      <a
-                        href={project.link}
-                        className="text-foreground hover:text-primary transition-colors"
-                        aria-label="External Link"
-                      >
-                        <ExternalLink size={20} />
-                      </a>
+                      {project.github_url && (
+                        <a
+                          href={project.github_url}
+                          className="text-foreground hover:text-primary transition-colors"
+                          aria-label="GitHub"
+                        >
+                          <Github size={20} />
+                        </a>
+                      )}
+                      {project.project_url && (
+                        <a
+                          href={project.project_url}
+                          className="text-foreground hover:text-primary transition-colors"
+                          aria-label="External Link"
+                        >
+                          <ExternalLink size={20} />
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -187,9 +146,9 @@ export function Projects() {
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {otherProjects.map((project, index) => (
+            {otherProjects.map((project: any, index: number) => (
               <motion.div
-                key={project.title}
+                key={project.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -199,20 +158,24 @@ export function Projects() {
                 <div className="flex items-center justify-between mb-8">
                   <Folder className="text-primary" size={40} />
                   <div className="flex gap-4">
-                    <a
-                      href={project.github}
-                      className="text-muted-foreground hover:text-primary transition-colors"
-                      aria-label="GitHub"
-                    >
-                      <Github size={20} />
-                    </a>
-                    <a
-                      href={project.link}
-                      className="text-muted-foreground hover:text-primary transition-colors"
-                      aria-label="External Link"
-                    >
-                      <ExternalLink size={20} />
-                    </a>
+                    {project.github_url && (
+                      <a
+                        href={project.github_url}
+                        className="text-muted-foreground hover:text-primary transition-colors"
+                        aria-label="GitHub"
+                      >
+                        <Github size={20} />
+                      </a>
+                    )}
+                    {project.project_url && (
+                      <a
+                        href={project.project_url}
+                        className="text-muted-foreground hover:text-primary transition-colors"
+                        aria-label="External Link"
+                      >
+                        <ExternalLink size={20} />
+                      </a>
+                    )}
                   </div>
                 </div>
                 <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">
@@ -222,7 +185,7 @@ export function Projects() {
                   {project.description}
                 </p>
                 <div className="flex flex-wrap gap-3 font-mono text-xs text-muted-foreground">
-                  {project.tags.map((tag) => (
+                  {project.technologies?.map((tag: string) => (
                     <span key={tag}>{tag}</span>
                   ))}
                 </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import {
   LogOut,
@@ -25,72 +25,45 @@ import {
 } from "../components/ui/dialog";
 import { toast } from "sonner";
 
+import { useAuth, useAsync } from "../hooks";
+import { supabase } from "../lib/supabase";
+
 // TODO: Import types once Supabase is integrated
 // import { Project, Message, WorkspaceImage, Album, SiteSettings } from "../types";
 
 export function Admin() {
-  // ============================================
-  // AUTHENTICATION STATE
-  // TODO: Replace with Supabase Auth
-  // Use: const { session, loading } = useAuth();
-  // ============================================
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { session, loading: authLoading, signIn, signOut } = useAuth();
+  const isAuthenticated = !!session;
+  
   const [email, setEmail] = useState("");
-
+  const [password, setPassword] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
   // ============================================
   // UI STATE
   // ============================================
   const [activeTab, setActiveTab] = useState("projects");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedMessage, setSelectedMessage] = useState<number | null>(null);
-  const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<string | null>(null);
+  const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
 
   // ============================================
   // PROJECTS STATE
-  // TODO: Replace with Supabase query
-  // const { data: projects, loading, error } = useProjects();
   // ============================================
-  const [projects, setProjects] = useState([
-    {
-      id: 1,
-      title: "E-Commerce Platform",
-      status: "Published",
-      views: 1234,
-      lastUpdated: "2026-03-15",
-      description: "A full-featured e-commerce platform with cart, checkout, and admin panel",
-      technologies: ["React", "Node.js", "MongoDB"],
-      imageUrl: "",
-      projectUrl: "",
-      githubUrl: "",
-      category: "Web App",
-    },
-    {
-      id: 2,
-      title: "Task Management App",
-      status: "Draft",
-      views: 456,
-      lastUpdated: "2026-03-20",
-      description: "Kanban-style task manager with drag-and-drop functionality",
-      technologies: ["React", "TypeScript", "Tailwind"],
-      imageUrl: "",
-      projectUrl: "",
-      githubUrl: "",
-      category: "Productivity",
-    },
-    {
-      id: 3,
-      title: "Design System",
-      status: "Published",
-      views: 789,
-      lastUpdated: "2026-03-10",
-      description: "Comprehensive component library and design guidelines",
-      technologies: ["React", "Storybook", "Figma"],
-      imageUrl: "",
-      projectUrl: "",
-      githubUrl: "",
-      category: "Design",
-    },
-  ]);
+  const { data: projectsData, loading: projectsLoading, refetch: refetchProjects } = useAsync(async () => {
+    const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    // Map db fields to match UI expectations
+    return (data || []).map((p: any) => ({
+      ...p,
+      lastUpdated: new Date(p.updated_at || p.created_at).toISOString().split('T')[0],
+      technologies: p.technologies || [],
+      imageUrl: p.image_url,
+      projectUrl: p.project_url,
+      githubUrl: p.github_url,
+    }));
+  });
+  
+  const projects = projectsData || [];
 
   const [formData, setFormData] = useState({
     title: "",
@@ -106,11 +79,19 @@ export function Admin() {
     featuredOnHomepage: false,
   });
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock authentication - in production, this would connect to Supabase SSO
-    if (email) {
-      setIsAuthenticated(true);
+    if (email && password) {
+      try {
+        setLoginLoading(true);
+        const { error } = await signIn(email, password);
+        if (error) throw error;
+        toast.success("Successfully logged in");
+      } catch (error: any) {
+        toast.error("Authentication failed", { description: error.message });
+      } finally {
+        setLoginLoading(false);
+      }
     }
   };
 
@@ -121,53 +102,46 @@ export function Admin() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (editingProjectId) {
-      // Update existing project
-      setProjects(projects.map((project) => 
-        project.id === editingProjectId 
-          ? {
-              ...project,
-              title: formData.title,
-              description: formData.description,
-              status: formData.status,
-              lastUpdated: new Date().toISOString().split("T")[0],
-              technologies: formData.technologies.split(",").map((tech) => tech.trim()),
-              imageUrl: formData.imageUrl,
-              projectUrl: formData.projectUrl,
-              githubUrl: formData.githubUrl,
-              category: formData.category,
-            }
-          : project
-      ));
-      toast.success("Project updated successfully!", {
-        description: `${formData.title} has been updated.`,
-      });
-    } else {
-      // Create new project
-      const newProject = {
-        id: projects.length > 0 ? Math.max(...projects.map(p => p.id)) + 1 : 1,
+    try {
+      const projectPayload = {
         title: formData.title,
         description: formData.description,
         status: formData.status,
-        views: 0,
-        lastUpdated: new Date().toISOString().split("T")[0],
-        technologies: formData.technologies.split(",").map((tech) => tech.trim()),
-        imageUrl: formData.imageUrl,
-        projectUrl: formData.projectUrl,
-        githubUrl: formData.githubUrl,
+        technologies: formData.technologies.split(",").map((tech) => tech.trim()).filter(Boolean),
+        image_url: formData.imageUrl,
+        demo_video_url: formData.demoVideoUrl,
+        project_url: formData.projectUrl,
+        github_url: formData.githubUrl,
         category: formData.category,
+        completion_date: formData.completionDate || null,
+        featured_on_homepage: formData.featuredOnHomepage,
       };
-      setProjects([newProject, ...projects]);
-      toast.success("Project created successfully!", {
-        description: `${formData.title} has been added to your portfolio.`,
-      });
+
+      if (editingProjectId) {
+        // Update existing project
+        const { error } = await supabase.from('projects').update(projectPayload).eq('id', editingProjectId);
+        if (error) throw error;
+        toast.success("Project updated successfully!", {
+          description: `${formData.title} has been updated.`,
+        });
+      } else {
+        // Create new project
+        const { error } = await supabase.from('projects').insert([projectPayload]);
+        if (error) throw error;
+        toast.success("Project created successfully!", {
+          description: `${formData.title} has been added to your portfolio.`,
+        });
+      }
+      
+      await refetchProjects();
+      setIsDialogOpen(false);
+      resetForm();
+    } catch (error: any) {
+      toast.error("Failed to save project", { description: error.message });
     }
-    
-    setIsDialogOpen(false);
-    resetForm();
   };
 
   const handleEdit = (project: any) => {
@@ -175,22 +149,28 @@ export function Admin() {
     setFormData({
       title: project.title,
       description: project.description,
-      technologies: project.technologies.join(", "),
-      imageUrl: project.imageUrl || "",
-      demoVideoUrl: "",
-      projectUrl: project.projectUrl || "",
-      githubUrl: project.githubUrl || "",
-      category: project.category,
-      status: project.status,
-      completionDate: "",
-      featuredOnHomepage: false,
+      technologies: project.technologies ? project.technologies.join(", ") : "",
+      imageUrl: project.image_url || "",
+      demoVideoUrl: project.demo_video_url || "",
+      projectUrl: project.project_url || "",
+      githubUrl: project.github_url || "",
+      category: project.category || "Web App",
+      status: project.status || "Draft",
+      completionDate: project.completion_date || "",
+      featuredOnHomepage: project.featured_on_homepage || false,
     });
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (projectId: number) => {
-    setProjects(projects.filter((project) => project.id !== projectId));
-    toast.success("Project deleted successfully!");
+  const handleDelete = async (projectId: string) => {
+    try {
+      const { error } = await supabase.from('projects').delete().eq('id', projectId);
+      if (error) throw error;
+      toast.success("Project deleted successfully!");
+      await refetchProjects();
+    } catch(error: any) {
+      toast.error("Failed to delete project", { description: error.message });
+    }
   };
 
   const resetForm = () => {
@@ -216,38 +196,16 @@ export function Admin() {
     { label: "Avg. View Time", value: "3m 24s", change: "+8.2%" },
   ];
 
-  // Mock inbox messages
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      email: "sarah.j@example.com",
-      subject: "Collaboration Opportunity",
-      message: "Hi Samir, I came across your portfolio and I'm impressed by your work. I'd love to discuss a potential collaboration on an upcoming project. Would you be available for a quick call next week?",
-      date: "2026-04-05",
-      unread: true,
-    },
-    {
-      id: 2,
-      name: "Michael Chen",
-      email: "m.chen@techcorp.com",
-      subject: "Frontend Developer Position",
-      message: "Hello, we're currently hiring for a senior frontend developer role at our company. Your experience with React and modern web technologies caught our attention. Are you open to new opportunities?",
-      date: "2026-04-04",
-      unread: true,
-    },
-    {
-      id: 3,
-      name: "Emily Rodriguez",
-      email: "emily.r@design.studio",
-      subject: "Design System Question",
-      message: "Hey Samir! I saw your design system project and had a few questions about your component architecture. Would you mind if I picked your brain about it?",
-      date: "2026-04-02",
-      unread: true,
-    },
-  ]);
-
-  const unreadCount = messages.filter((m) => m.unread).length;
+  const { data: messagesData, refetch: refetchMessages } = useAsync(async () => {
+    const { data, error } = await supabase.from('messages').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    return (data || []).map((m: any) => ({
+      ...m,
+      date: new Date(m.created_at).toISOString().split('T')[0],
+    }));
+  });
+  const messages = messagesData || [];
+  const unreadCount = messages.filter((m: any) => m.unread).length;
 
   // Settings state
   const [settings, setSettings] = useState({
@@ -260,16 +218,53 @@ export function Admin() {
     twitterUrl: "https://twitter.com/samirmahmoud",
   });
 
+  const { data: settingsData } = useAsync(async () => {
+    const { data, error } = await supabase.from('site_settings').select('*').limit(1).single();
+    if (error && error.code !== 'PGRST116') throw error;
+    return data;
+  });
+
+  useEffect(() => {
+    if (settingsData) {
+      setSettings({
+        name: settingsData.name || "",
+        tagline: settingsData.tagline || "",
+        bio: settingsData.bio || "",
+        email: settingsData.email || "",
+        githubUrl: settingsData.github_url || "",
+        linkedinUrl: settingsData.linkedin_url || "",
+        twitterUrl: settingsData.twitter_url || "",
+      });
+    }
+  }, [settingsData]);
+
   const handleSettingChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setSettings((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSaveSettings = (e: React.FormEvent) => {
+  const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Settings saved successfully!", {
-      description: "Your portfolio settings have been updated.",
-    });
+    try {
+      const payload = {
+        name: settings.name,
+        tagline: settings.tagline,
+        bio: settings.bio,
+        email: settings.email,
+        github_url: settings.githubUrl,
+        linkedin_url: settings.linkedinUrl,
+        twitter_url: settings.twitterUrl,
+      };
+      const { data } = await supabase.from('site_settings').select('id').limit(1).single();
+      if (data) {
+        await supabase.from('site_settings').update(payload).eq('id', data.id);
+      } else {
+        await supabase.from('site_settings').insert([payload]);
+      }
+      toast.success("Settings saved successfully!");
+    } catch(err: any) {
+      toast.error("Failed to save settings", { description: err.message });
+    }
   };
 
   // Projects filter and sort state
@@ -277,31 +272,27 @@ export function Admin() {
   const [projectsSort, setProjectsSort] = useState<"recent" | "views" | "title">("recent");
   const [projectsSearch, setProjectsSearch] = useState("");
 
-  // Mock workspace gallery images
-  const [workspaceImages, setWorkspaceImages] = useState([
-    "https://images.unsplash.com/photo-1555209183-8facf96a4349?w=600&q=80",
-    "https://images.unsplash.com/photo-1644337540803-2b2fb3cebf12?w=600&q=80",
-    "https://images.unsplash.com/photo-1623281185000-6940e5347d2e?w=600&q=80",
-    "https://images.unsplash.com/photo-1648241776507-7e3ae32698e6?w=600&q=80",
-  ]);
+  const { data: workspaceImagesData, refetch: refetchWorkspaceImages } = useAsync(async () => {
+    const { data, error } = await supabase.from('workspace_images').select('*').order('order_index', { ascending: true });
+    if (error) throw error;
+    return data || [];
+  });
+  const workspaceImages = workspaceImagesData || [];
 
-  // Mock album URLs
-  const [albumUrls, setAlbumUrls] = useState([
-    { id: 1, url: "https://images.unsplash.com/photo-1773408285355-a1d4a141ea1a?w=300&q=80", title: "Octane - Don Toliver" },
-    { id: 2, url: "https://images.unsplash.com/photo-1609793463612-db1954fbfb34?w=300&q=80", title: "The Off-Season - J. Cole" },
-    { id: 3, url: "https://images.unsplash.com/photo-1644855640845-ab57a047320e?w=300&q=80", title: "Album 1" },
-    { id: 4, url: "https://images.unsplash.com/photo-1638109879562-1f98abe0d45f?w=300&q=80", title: "Album 2" },
-  ]);
+  const { data: albumsData, refetch: refetchAlbums } = useAsync(async () => {
+    const { data, error } = await supabase.from('albums').select('*').order('order_index', { ascending: true });
+    if (error) throw error;
+    return data || [];
+  });
+  const albumUrls = albumsData || [];
 
-  const handleMessageClick = (messageId: number) => {
+  const handleMessageClick = async (messageId: string) => {
     setSelectedMessage(messageId);
-    // Mark message as read
-    setMessages(messages.map((msg) => 
-      msg.id === messageId ? { ...msg, unread: false } : msg
-    ));
+    await supabase.from('messages').update({ unread: false }).eq('id', messageId);
+    await refetchMessages();
   };
 
-  const handleAddWorkspaceImage = () => {
+  const handleAddWorkspaceImage = async () => {
     const dummyImages = [
       "https://images.unsplash.com/photo-1593642532400-2682810df593?w=600&q=80",
       "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=600&q=80",
@@ -309,8 +300,13 @@ export function Admin() {
       "https://images.unsplash.com/photo-1509343256512-d77a5ae5ca00?w=600&q=80",
     ];
     const randomImage = dummyImages[Math.floor(Math.random() * dummyImages.length)];
-    setWorkspaceImages([...workspaceImages, randomImage]);
-    toast.success("Workspace image added!");
+    try {
+      await supabase.from('workspace_images').insert([{ url: randomImage, order_index: workspaceImages.length }]);
+      toast.success("Workspace image added!");
+      await refetchWorkspaceImages();
+    } catch(err: any) {
+      toast.error("Failed to add image", { description: err.message });
+    }
   };
 
   // Filter and sort projects
@@ -349,6 +345,14 @@ export function Admin() {
   };
 
   const filteredProjects = getFilteredAndSortedProjects();
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pt-16 px-6">
+        <div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
@@ -397,24 +401,26 @@ export function Admin() {
                 required
               />
             </div>
+            
+            <div>
+              <label className="block mb-2 text-sm font-mono text-primary">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-primary outline-none transition-colors"
+                required
+              />
+            </div>
 
             <button
               type="submit"
-              className="w-full px-6 py-3 rounded-lg border border-primary text-primary hover:bg-primary/10 transition-colors font-mono"
+              disabled={loginLoading}
+              className="w-full px-6 py-3 rounded-lg border border-primary text-primary hover:bg-primary/10 transition-colors font-mono disabled:opacity-50"
             >
-              Continue with SSO
+              {loginLoading ? "Authenticating..." : "Sign In"}
             </button>
-
-            <div className="text-center text-sm text-muted-foreground bg-accent/50 p-4 rounded-lg border border-border/50">
-              <p>
-                This is a mock login. In production, this would use Supabase SSO
-                authentication.
-              </p>
-              <p className="mt-2">
-                Connect Supabase from the <strong className="text-primary">Make settings page</strong> to
-                enable real authentication.
-              </p>
-            </div>
           </form>
         </motion.div>
       </div>
@@ -437,7 +443,7 @@ export function Admin() {
               </p>
             </div>
             <button
-              onClick={() => setIsAuthenticated(false)}
+              onClick={() => signOut()}
               className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border hover:bg-accent transition-colors"
             >
               <LogOut size={18} />
@@ -742,15 +748,19 @@ export function Admin() {
                 </h3>
                 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                  {workspaceImages.map((url, index) => (
-                    <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border border-border/50 bg-accent">
-                      <img src={url} alt={`Workspace ${index + 1}`} className="w-full h-full object-cover" />
+                  {workspaceImages.map((img: any, index) => (
+                    <div key={img.id || index} className="relative group aspect-square rounded-lg overflow-hidden border border-border/50 bg-accent">
+                      <img src={img.url} alt={`Workspace ${index + 1}`} className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <button
-                          onClick={() => {
-                            const newImages = workspaceImages.filter((_, i) => i !== index);
-                            setWorkspaceImages(newImages);
-                            toast.success("Image removed");
+                          onClick={async () => {
+                            try {
+                              await supabase.from('workspace_images').delete().eq('id', img.id);
+                              toast.success("Image removed");
+                              await refetchWorkspaceImages();
+                            } catch (err: any) {
+                              toast.error("Failed to remove image", { description: err.message });
+                            }
                           }}
                           className="p-2 rounded-lg bg-destructive text-white"
                         >
@@ -783,28 +793,44 @@ export function Admin() {
                 </h3>
                 
                 <div className="space-y-3">
-                  {albumUrls.map((album) => (
+                  {albumUrls.map((album: any) => (
                     <div key={album.id} className="p-4 rounded-lg border border-border/50 bg-card flex items-center gap-4">
                       <img src={album.url} alt={album.title} className="w-16 h-16 rounded object-cover" />
                       <div className="flex-1">
                         <input
                           type="text"
                           defaultValue={album.title}
+                          onBlur={async (e) => {
+                            if (e.target.value !== album.title) {
+                              await supabase.from('albums').update({ title: e.target.value }).eq('id', album.id);
+                              refetchAlbums();
+                            }
+                          }}
                           className="w-full px-3 py-2 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors text-sm mb-2"
                           placeholder="Album Title"
                         />
                         <input
                           type="url"
                           defaultValue={album.url}
+                          onBlur={async (e) => {
+                            if (e.target.value !== album.url) {
+                              await supabase.from('albums').update({ url: e.target.value }).eq('id', album.id);
+                              refetchAlbums();
+                            }
+                          }}
                           className="w-full px-3 py-2 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors text-sm"
                           placeholder="Image URL"
                         />
                       </div>
                       <button
-                        onClick={() => {
-                          const newAlbums = albumUrls.filter((a) => a.id !== album.id);
-                          setAlbumUrls(newAlbums);
-                          toast.success("Album removed");
+                        onClick={async () => {
+                          try {
+                            await supabase.from('albums').delete().eq('id', album.id);
+                            toast.success("Album removed");
+                            await refetchAlbums();
+                          } catch (err: any) {
+                            toast.error("Failed to remove album", { description: err.message });
+                          }
                         }}
                         className="p-2 rounded-lg hover:bg-destructive/20 text-destructive transition-colors"
                       >
@@ -814,10 +840,15 @@ export function Admin() {
                   ))}
                   
                   <button
-                    onClick={() => {
-                      const newId = Math.max(...albumUrls.map((a) => a.id)) + 1;
-                      setAlbumUrls([...albumUrls, { id: newId, url: "", title: "New Album" }]);
-                      toast.success("Album added");
+                    onClick={async () => {
+                      try {
+                        const newTitle = "New Album";
+                        await supabase.from('albums').insert([{ url: "https://images.unsplash.com/photo-1638109879562-1f98abe0d45f?w=300&q=80", title: newTitle, order_index: albumUrls.length }]);
+                        toast.success("Album added");
+                        await refetchAlbums();
+                      } catch (err: any) {
+                        toast.error("Failed to add album", { description: err.message });
+                      }
                     }}
                     className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border hover:bg-accent transition-colors"
                   >

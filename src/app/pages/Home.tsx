@@ -2,8 +2,28 @@ import { motion } from "motion/react";
 import { ArrowRight, Check } from "lucide-react";
 import { Link } from "react-router";
 import profileImg from "../../assets/d7db82655c6674b4948dd2ab7cad4334dee31f29.png";
+import { useAsync } from "../hooks";
+import { supabase } from "../lib/supabase";
 
 export function Home() {
+  const { data: settingsData } = useAsync(async () => {
+    const { data, error } = await supabase.from('site_settings').select('*').limit(1).single();
+    if (error && error.code !== 'PGRST116') throw error;
+    return data;
+  });
+
+  const { data: featuredProjects } = useAsync(async () => {
+    const { data, error } = await supabase.from('projects').select('*').eq('featured_on_homepage', true).order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  });
+  
+  const settings = settingsData || {
+    name: "Samir Mahmoud.",
+    tagline: "I build things for the web.",
+    bio: "I'm a software engineer specializing in building (and occasionally designing) exceptional digital experiences. Currently, I'm focused on building accessible, human-centered products.",
+  };
+
   return (
     <div className="pt-20">
       {/* Hero Section */}
@@ -30,7 +50,7 @@ export function Home() {
         {/* NEW: Bottom-Right Purple Blob */}
         <div
           className="absolute bottom-0 right-0 w-[900px] h-[900px] pointer-events-none opacity-10"
-          style={{
+          style={{            
             background: 'radial-gradient(circle, rgba(192, 132, 252, 1) 0%, rgba(192, 132, 252, 0.6) 30%, transparent 70%)',
             filter: 'blur(120px)',
             transform: 'translate(30%, 30%)',
@@ -84,7 +104,7 @@ export function Home() {
                   fontFamily: "'Playfair Display', serif",
                 }}
               >
-                Samir Mahmoud.
+                {settings.name}
               </motion.h1>
 
               {/* Tagline */}
@@ -99,7 +119,7 @@ export function Home() {
                   fontFamily: "'Playfair Display', serif",
                 }}
               >
-                I build things for the web.
+                {settings.tagline}
               </motion.h2>
 
               {/* Description */}
@@ -109,16 +129,7 @@ export function Home() {
                 transition={{ duration: 0.6, delay: 0.4 }}
                 className="text-muted-foreground text-sm md:text-base lg:text-lg max-w-2xl mb-12 leading-relaxed"
               >
-                I'm a software engineer specializing in building (and occasionally
-                designing) exceptional digital experiences. Currently, I'm focused
-                on building accessible, human-centered products at{" "}
-                <a
-                  href="#"
-                  className="text-primary hover:underline"
-                >
-                  YourCompany
-                </a>
-                .
+                {settings.bio}
               </motion.p>
 
               {/* CTA */}
@@ -278,288 +289,74 @@ export function Home() {
           </div>
 
           <div className="space-y-12">
-            {/* Featured Project 1 - E-Commerce */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="relative group"
-            >
-              {/* Desktop Layout */}
-              <div className="hidden md:block relative rounded-lg overflow-hidden border border-primary/20 bg-background/40 backdrop-blur-sm hover:border-primary/50 transition-colors duration-300">
-                <div className="relative h-[400px] w-full flex items-stretch">
-                  {/* Left Side - Frosted Glass Content Box */}
-                  <div className="w-[40%] relative z-10 p-8 md:p-10 flex flex-col justify-center">
-                    <div 
-                      className="rounded-lg border border-primary/30 bg-background/80 backdrop-blur-xl p-6"
-                      style={{
-                        boxShadow: 'inset 0 0 40px rgba(167, 139, 250, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4)',
-                      }}
-                    >
-                      <p className="text-primary font-mono text-sm mb-3">Featured Project</p>
-                      <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">E-Commerce Platform</h3>
-                      <p className="text-gray-200 leading-relaxed mb-6">
-                        A full-stack e-commerce solution with real-time inventory
-                        management, secure payment processing, and a comprehensive
-                        admin dashboard.
-                      </p>
-                      <div className="flex flex-wrap gap-3 font-mono text-sm text-gray-300">
-                        <span>React</span>
-                        <span>Node.js</span>
-                        <span>PostgreSQL</span>
-                        <span>Stripe</span>
+            {featuredProjects?.map((project: any, index: number) => (
+              <motion.div
+                key={project.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="relative group"
+              >
+                {/* Desktop Layout */}
+                <div className="hidden md:block relative rounded-lg overflow-hidden border border-primary/20 bg-background/40 backdrop-blur-sm hover:border-primary/50 transition-colors duration-300">
+                  <div className={`relative h-[400px] w-full flex items-stretch ${index % 2 !== 0 ? 'flex-row-reverse' : ''}`}>
+                    {/* Content Box */}
+                    <div className="w-[40%] relative z-10 p-8 md:p-10 flex flex-col justify-center">
+                      <div 
+                        className="rounded-lg border border-primary/30 bg-background/80 backdrop-blur-xl p-6"
+                        style={{
+                          boxShadow: 'inset 0 0 40px rgba(167, 139, 250, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4)',
+                        }}
+                      >
+                        <p className="text-primary font-mono text-sm mb-3">Featured Project</p>
+                        <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">{project.title}</h3>
+                        <p className="text-gray-200 leading-relaxed mb-6">
+                          {project.description}
+                        </p>
+                        <div className="flex flex-wrap gap-3 font-mono text-sm text-gray-300">
+                          {project.technologies?.map((tech: string) => (
+                            <span key={tech}>{tech}</span>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Right Side - Background Image */}
-                  <div className="w-[70%] absolute right-0 top-0 h-full overflow-hidden">
+                    {/* Background Image */}
+                    <div className={`w-[70%] absolute ${index % 2 !== 0 ? 'left-0' : 'right-0'} top-0 h-full overflow-hidden`}>
+                      <img
+                        src={project.image_url || "https://images.unsplash.com/photo-1557821552-17105176677c?w=1200&q=80"}
+                        alt={project.title}
+                        className="w-full h-full object-cover opacity-50 group-hover:opacity-60 group-hover:scale-105 transition-all duration-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mobile Layout */}
+                <div className="md:hidden rounded-lg overflow-hidden border border-primary/20 bg-background/40 backdrop-blur-sm">
+                  <div className="w-full h-48 overflow-hidden">
                     <img
-                      src="https://images.unsplash.com/photo-1557821552-17105176677c?w=1200&q=80"
-                      alt="E-Commerce Platform"
-                      className="w-full h-full object-cover opacity-50 group-hover:opacity-60 group-hover:scale-105 transition-all duration-500"
+                      src={project.image_url || "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&q=80"}
+                      alt={project.title}
+                      className="w-full h-full object-cover"
                     />
                   </div>
-                </div>
-              </div>
-
-              {/* Mobile Layout */}
-              <div className="md:hidden rounded-lg overflow-hidden border border-primary/20 bg-background/40 backdrop-blur-sm">
-                {/* Image on top */}
-                <div className="w-full h-48 overflow-hidden">
-                  <img
-                    src="https://images.unsplash.com/photo-1557821552-17105176677c?w=800&q=80"
-                    alt="E-Commerce Platform"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                {/* Text card below */}
-                <div className="p-6 bg-[#0a0a1a]">
-                  <p className="text-primary font-mono text-xs mb-2">Featured Project</p>
-                  <h3 className="text-2xl font-bold text-white mb-3">E-Commerce Platform</h3>
-                  <p className="text-slate-300 leading-relaxed mb-4 text-sm">
-                    A full-stack e-commerce solution with real-time inventory
-                    management, secure payment processing, and a comprehensive
-                    admin dashboard.
-                  </p>
-                  <div className="flex flex-wrap gap-2 font-mono text-xs text-gray-400">
-                    <span>React</span>
-                    <span>Node.js</span>
-                    <span>PostgreSQL</span>
-                    <span>Stripe</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Featured Project 2 - Home Media Server */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="relative group"
-            >
-              {/* Desktop Layout */}
-              <div className="hidden md:block relative rounded-lg overflow-hidden border border-primary/20 bg-background/40 backdrop-blur-sm hover:border-primary/50 transition-colors duration-300">
-                <div className="relative h-[400px] w-full p-8 flex items-center gap-8">
-                  {/* Terminal Dashboard - Floating Window on Left */}
-                  <div className="w-[55%] h-full flex items-start">
-                    <div 
-                      className="relative w-full rounded-md overflow-hidden border border-primary/30 bg-[#0a0a1a] group-hover:scale-105 transition-transform duration-500"
-                      style={{
-                        aspectRatio: '16/9',
-                        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(167, 139, 250, 0.18), 0 0 50px rgba(167, 139, 250, 0.085)',
-                      }}
-                    >
-                      {/* Linux-style Terminal Header */}
-                      <div className="bg-[#1a1a2e] border-b border-primary/20 px-4 py-2 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-400 text-[10px] font-mono">samir@homeserver:~/media-server</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <div className="w-3.5 h-3.5 flex items-center justify-center hover:bg-gray-700 rounded transition-colors cursor-pointer">
-                            <span className="text-gray-400 text-xs">−</span>
-                          </div>
-                          <div className="w-3.5 h-3.5 flex items-center justify-center hover:bg-gray-700 rounded transition-colors cursor-pointer">
-                            <span className="text-gray-400 text-xs">□</span>
-                          </div>
-                          <div className="w-3.5 h-3.5 flex items-center justify-center hover:bg-red-600 rounded transition-colors cursor-pointer">
-                            <span className="text-gray-400 hover:text-white text-xs">×</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Terminal Dashboard Content */}
-                      <div className="absolute inset-0 pt-10 p-6 font-mono text-xs overflow-hidden">
-                        {/* System Stats Grid */}
-                        <div className="grid grid-cols-3 gap-2 mb-4 text-[10px]">
-                          <div className="border border-primary/30 rounded p-2 bg-primary/5">
-                            <div className="text-primary/60 mb-1">CPU</div>
-                            <div className="text-primary text-sm font-bold">Ryzen™ 9</div>
-                            <div className="text-primary/70 text-[9px]">7940HS</div>
-                            <div className="text-primary/40 mt-0.5 text-[8px]">⣿⣿⣿⣿⣿⣀⣀⣀⣀⣀</div>
-                          </div>
-                          <div className="border border-primary/30 rounded p-2 bg-primary/5">
-                            <div className="text-primary/60 mb-1">MEM</div>
-                            <div className="text-primary text-lg font-bold">16GB</div>
-                            <div className="text-primary/40 mt-0.5 text-[8px]">⣿⣿⣿⣿⣿⣿⣿⣀⣀⣀</div>
-                          </div>
-                          <div className="border border-primary/30 rounded p-2 bg-primary/5">
-                            <div className="text-primary/60 mb-1">GPU</div>
-                            <div className="text-primary text-sm font-bold">RTX 4060</div>
-                            <div className="text-primary/40 mt-0.5 text-[8px]">⣿⣿⣿⣿⣿⣿⣀⣀⣀⣀</div>
-                          </div>
-                        </div>
-
-                        {/* Service Status */}
-                        <div className="space-y-1.5 text-[10px] mb-4">
-                          <div className="flex items-center gap-2">
-                            <span className="text-[#28c840]">●</span>
-                            <span className="text-gray-400">plex</span>
-                            <span className="text-primary/40">running</span>
-                            <span className="ml-auto text-primary/60">23d 17h</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[#28c840]">●</span>
-                            <span className="text-gray-400">cloudflared</span>
-                            <span className="text-primary/40">running</span>
-                            <span className="ml-auto text-primary/60">8d 2h</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[#28c840]">●</span>
-                            <span className="text-gray-400">overseerr</span>
-                            <span className="text-primary/40">running</span>
-                            <span className="ml-auto text-primary/60">41d 9h</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[#28c840]">●</span>
-                            <span className="text-gray-400">cli_debrid</span>
-                            <span className="text-primary/40">running</span>
-                            <span className="ml-auto text-primary/60">12d 23h</span>
-                          </div>
-                        </div>
-
-                        {/* Recent Activity Log */}
-                        <div className="text-[9px] text-primary/30 space-y-1">
-                          <div>[2026-04-06 14:23:15] New media added</div>
-                          <div>[2026-04-06 14:18:42] Transcoding completed</div>
-                          <div>[2026-04-06 14:12:08] Remote access</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Project Description - Right Side */}
-                  <div className="w-[45%] flex flex-col justify-start pr-4">
-                    <p className="text-primary font-mono text-sm mb-3">Featured Project</p>
-                    <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 font-mono">Home Media Server</h3>
-                    <p className="text-slate-300 leading-relaxed mb-6">
-                      Self-hosted media streaming platform with automated content
-                      management, remote access capabilities, and comprehensive
-                      monitoring dashboard.
+                  <div className="p-6 bg-[#0a0a1a]">
+                    <p className="text-primary font-mono text-xs mb-2">Featured Project</p>
+                    <h3 className="text-2xl font-bold text-white mb-3">{project.title}</h3>
+                    <p className="text-slate-300 leading-relaxed mb-4 text-sm">
+                      {project.description}
                     </p>
-                    <div className="flex flex-wrap gap-3 font-mono text-sm text-gray-400">
-                      <span>Docker</span>
-                      <span>Plex</span>
-                      <span>Linux</span>
-                      <span>Tailscale</span>
+                    <div className="flex flex-wrap gap-2 font-mono text-xs text-gray-400">
+                      {project.technologies?.map((tech: string) => (
+                        <span key={tech}>{tech}</span>
+                      ))}
                     </div>
                   </div>
                 </div>
-              </div>
-
-              {/* Mobile Layout */}
-              <div className="md:hidden rounded-lg overflow-hidden border border-primary/20 bg-background/40 backdrop-blur-sm">
-                {/* Terminal image on top */}
-                <div className="w-full p-4 bg-[#0a0a1a]">
-                  <div 
-                    className="relative w-full rounded-md overflow-hidden border border-primary/30 bg-[#0a0a1a]"
-                    style={{
-                      aspectRatio: '16/9',
-                    }}
-                  >
-                    {/* Terminal Header */}
-                    <div className="bg-[#1a1a2e] border-b border-primary/20 px-3 py-1.5 flex items-center justify-between">
-                      <span className="text-gray-400 text-[9px] font-mono">samir@homeserver:~/media-server</span>
-                      <div className="flex items-center gap-1">
-                        <div className="w-2.5 h-2.5 flex items-center justify-center">
-                          <span className="text-gray-400 text-[10px]">−</span>
-                        </div>
-                        <div className="w-2.5 h-2.5 flex items-center justify-center">
-                          <span className="text-gray-400 text-[10px]">□</span>
-                        </div>
-                        <div className="w-2.5 h-2.5 flex items-center justify-center">
-                          <span className="text-gray-400 text-[10px]">×</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Terminal Content */}
-                    <div className="p-3 font-mono text-[9px] overflow-hidden">
-                      {/* System Stats */}
-                      <div className="grid grid-cols-3 gap-1.5 mb-3">
-                        <div className="border border-primary/30 rounded p-1.5 bg-primary/5">
-                          <div className="text-primary/60 text-[8px]">CPU</div>
-                          <div className="text-primary text-[10px] font-bold">Ryzen™ 9</div>
-                          <div className="text-primary/70 text-[7px]">7940HS</div>
-                        </div>
-                        <div className="border border-primary/30 rounded p-1.5 bg-primary/5">
-                          <div className="text-primary/60 text-[8px]">MEM</div>
-                          <div className="text-primary text-xs font-bold">16GB</div>
-                        </div>
-                        <div className="border border-primary/30 rounded p-1.5 bg-primary/5">
-                          <div className="text-primary/60 text-[8px]">GPU</div>
-                          <div className="text-primary text-[10px] font-bold">RTX 4060</div>
-                        </div>
-                      </div>
-
-                      {/* Services */}
-                      <div className="space-y-1 text-[8px]">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[#28c840]">●</span>
-                          <span className="text-gray-400">plex</span>
-                          <span className="ml-auto text-primary/60">23d 17h</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[#28c840]">●</span>
-                          <span className="text-gray-400">cloudflared</span>
-                          <span className="ml-auto text-primary/60">8d 2h</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[#28c840]">●</span>
-                          <span className="text-gray-400">overseerr</span>
-                          <span className="ml-auto text-primary/60">41d 9h</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[#28c840]">●</span>
-                          <span className="text-gray-400">cli_debrid</span>
-                          <span className="ml-auto text-primary/60">12d 23h</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Text card below */}
-                <div className="p-6 bg-[#0a0a1a] border-t border-primary/10">
-                  <p className="text-primary font-mono text-xs mb-2">Featured Project</p>
-                  <h3 className="text-2xl font-bold text-white mb-3 font-mono">Home Media Server</h3>
-                  <p className="text-slate-300 leading-relaxed mb-4 text-sm">
-                    Self-hosted media streaming platform with automated content
-                    management, remote access capabilities, and comprehensive
-                    monitoring dashboard.
-                  </p>
-                  <div className="flex flex-wrap gap-2 font-mono text-xs text-gray-400">
-                    <span>Docker</span>
-                    <span>Plex</span>
-                    <span>Linux</span>
-                    <span>Tailscale</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            ))}
           </div>
 
           <motion.div
