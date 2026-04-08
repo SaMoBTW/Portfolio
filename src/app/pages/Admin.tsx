@@ -61,7 +61,7 @@ export function Admin() {
       projectUrl: p.project_url,
       githubUrl: p.github_url,
     }));
-  });
+  }, [], { skip: !isAuthenticated });
   
   const projects = projectsData || [];
 
@@ -203,7 +203,7 @@ export function Admin() {
       ...m,
       date: new Date(m.created_at).toISOString().split('T')[0],
     }));
-  });
+  }, [], { skip: !isAuthenticated });
   const messages = messagesData || [];
   const unreadCount = messages.filter((m: any) => m.unread).length;
 
@@ -222,7 +222,7 @@ export function Admin() {
     const { data, error } = await supabase.from('site_settings').select('*').limit(1).single();
     if (error && error.code !== 'PGRST116') throw error;
     return data;
-  });
+  }, [], { skip: !isAuthenticated });
 
   useEffect(() => {
     if (settingsData) {
@@ -972,6 +972,7 @@ export function Admin() {
                   placeholder="E.g., E-Commerce Platform"
                   className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors"
                   required
+                  maxLength={100}
                 />
               </div>
 
@@ -987,6 +988,7 @@ export function Admin() {
                   rows={3}
                   className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors resize-none"
                   required
+                  maxLength={1000}
                 />
               </div>
 

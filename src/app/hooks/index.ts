@@ -116,13 +116,15 @@ export function useForm<T extends Record<string, any>>(
  */
 export function useAsync<T>(
   asyncFunction: () => Promise<T>,
-  dependencies: any[] = []
+  dependencies: any[] = [],
+  options?: { skip?: boolean }
 ) {
   const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!options?.skip ? false : true);
   const [error, setError] = useState<Error | null>(null);
 
-  const execute = useCallback(async () => {
+  const execute = useCallback(async (...args: any[]) => {
+    if (options?.skip) return;
     setLoading(true);
     setError(null);
     
@@ -134,11 +136,13 @@ export function useAsync<T>(
     } finally {
       setLoading(false);
     }
-  }, dependencies);
+  }, [...dependencies, options?.skip]);
 
   useEffect(() => {
-    execute();
-  }, [execute]);
+    if (!options?.skip) {
+      execute();
+    }
+  }, [execute, options?.skip]);
 
   return { data, loading, error, refetch: execute };
 }
