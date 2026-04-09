@@ -31,7 +31,7 @@ export function Navigation() {
               className="flex items-center"
             >
               <span className="text-2xl font-bold font-mono text-primary">
-                &gt;_SaMo
+                &gt;_S
               </span>
               <motion.span
                 animate={{ opacity: [1, 0] }}
