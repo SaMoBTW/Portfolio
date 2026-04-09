@@ -82,7 +82,7 @@ export function SocialSidebar() {
             writingMode: "vertical-rl",
           }}
         >
-          hello@example.com
+          meemok2111@gmail.com
         </a>
         <div className="w-px h-24 bg-border"></div>
       </motion.div>
