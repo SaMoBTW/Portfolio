@@ -385,7 +385,7 @@ export function Admin() {
             </motion.div>
             <h1 className="text-3xl tracking-tight mb-2 font-bold">Admin Portal</h1>
             <p className="text-muted-foreground">
-              Sign in to manage your portfolio
+              Where I manage my content and settings
             </p>
           </div>
 
