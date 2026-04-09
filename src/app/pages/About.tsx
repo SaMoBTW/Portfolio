@@ -263,7 +263,7 @@ export function About() {
         </div>
       </section>
 
-      {/* Signals in the Noise - 3-Column Grid */}
+      {/* Creative Influences - 3-Column Grid */}
       <section className="py-20 relative">
         <div className="mx-auto max-w-6xl px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-12">
@@ -271,7 +271,7 @@ export function About() {
               <span className="text-primary/60 font-mono text-sm md:text-base mr-3">
                 &lt;Inspiration /&gt;
               </span>
-              Signals in the Noise
+              Creative Influences
             </h2>
             <div className="flex-1 h-px bg-border ml-4"></div>
           </div>
