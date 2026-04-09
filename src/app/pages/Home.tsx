@@ -31,7 +31,7 @@ export function Home() {
   const settings = settingsData || {
     name: "Samir Mahmoud.",
     tagline: "I build things for the web.",
-    bio: "I'm a software engineer specializing in building (and occasionally designing) exceptional digital experiences. Currently, I'm focused on building accessible, human-centered products.",
+    bio: "I'm a software engineer specializing in building and designing exceptional digital experiences. Currently, I'm focused on building accessible, human-centered products.",
   };
 
   return (
@@ -331,7 +331,11 @@ export function Home() {
             {featuredProjects?.map((project: any, index: number) => {
               if (project.title?.trim().toLowerCase() === "home media server") {
                 return (
-                  <Link key={project.id} to={`/projects/${project.id}`} className="block">
+                  <Link
+                    key={project.id}
+                    to={`/projects/${project.id}`}
+                    className="block"
+                  >
                     <motion.div
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
@@ -340,45 +344,139 @@ export function Home() {
                       className="relative group cursor-pointer"
                     >
                       {/* Desktop Layout */}
-                    <div className="hidden md:block relative rounded-lg overflow-hidden border border-primary/20 bg-background/40 backdrop-blur-sm hover:border-primary/50 transition-colors duration-300">
-                      <div
-                        className={`relative h-[400px] w-full p-8 flex items-center gap-8 ${index % 2 !== 0 ? "flex-row-reverse" : ""}`}
-                      >
-                        {/* Terminal Dashboard - Floating Window typically on Left */}
-                        <div className="w-[55%] h-full flex items-start">
+                      <div className="hidden md:block relative rounded-lg overflow-hidden border border-primary/20 bg-background/40 backdrop-blur-sm hover:border-primary/50 transition-colors duration-300">
+                        <div
+                          className={`relative h-[400px] w-full p-8 flex items-center gap-8 ${index % 2 !== 0 ? "flex-row-reverse" : ""}`}
+                        >
+                          {/* Terminal Dashboard - Floating Window typically on Left */}
+                          <div className="w-[55%] h-full flex items-start">
+                            <TerminalVisual />
+                          </div>
+
+                          {/* Project Description */}
+                          <div className="w-[45%] flex flex-col justify-start pr-4">
+                            <p className="text-primary font-mono text-sm mb-3">
+                              Featured Project
+                            </p>
+                            <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 font-mono">
+                              {project.title}
+                            </h3>
+                            <p className="text-slate-300 leading-relaxed mb-6">
+                              {project.description}
+                            </p>
+                            <div className="flex flex-wrap gap-3 font-mono text-sm text-gray-400">
+                              {project.technologies?.map((tech: string) => (
+                                <span key={tech}>{tech}</span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Mobile Layout */}
+                      <div className="md:hidden rounded-lg overflow-hidden border border-primary/20 bg-background/40 backdrop-blur-sm">
+                        <div className="w-full p-4 bg-[#0a0a1a]">
                           <TerminalVisual />
                         </div>
-
-                        {/* Project Description */}
-                        <div className="w-[45%] flex flex-col justify-start pr-4">
-                          <p className="text-primary font-mono text-sm mb-3">
+                        <div className="p-6 bg-[#0a0a1a] border-t border-primary/10">
+                          <p className="text-primary font-mono text-xs mb-2">
                             Featured Project
                           </p>
-                          <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 font-mono">
+                          <h3 className="text-2xl font-bold text-white mb-3 font-mono">
                             {project.title}
                           </h3>
-                          <p className="text-slate-300 leading-relaxed mb-6">
+                          <p className="text-slate-300 leading-relaxed mb-4 text-sm">
                             {project.description}
                           </p>
-                          <div className="flex flex-wrap gap-3 font-mono text-sm text-gray-400">
+                          <div className="flex flex-wrap gap-2 font-mono text-xs text-gray-400">
                             {project.technologies?.map((tech: string) => (
                               <span key={tech}>{tech}</span>
                             ))}
                           </div>
                         </div>
                       </div>
+                    </motion.div>
+                  </Link>
+                );
+              }
+
+              return (
+                <Link
+                  key={project.id}
+                  to={`/projects/${project.id}`}
+                  className="block"
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="relative group cursor-pointer"
+                  >
+                    {/* Desktop Layout */}
+                    <div className="hidden md:block relative rounded-lg overflow-hidden border border-primary/20 bg-background/40 backdrop-blur-sm hover:border-primary/50 transition-colors duration-300">
+                      <div
+                        className={`relative h-[400px] w-full flex items-stretch ${index % 2 !== 0 ? "flex-row-reverse" : ""}`}
+                      >
+                        {/* Content Box */}
+                        <div className="w-[40%] relative z-10 p-8 md:p-10 flex flex-col justify-center">
+                          <div
+                            className="rounded-lg border border-primary/30 bg-background/80 backdrop-blur-xl p-6"
+                            style={{
+                              boxShadow:
+                                "inset 0 0 40px rgba(167, 139, 250, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4)",
+                            }}
+                          >
+                            <p className="text-primary font-mono text-sm mb-3">
+                              Featured Project
+                            </p>
+                            <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                              {project.title}
+                            </h3>
+                            <p className="text-gray-200 leading-relaxed mb-6">
+                              {project.description}
+                            </p>
+                            <div className="flex flex-wrap gap-3 font-mono text-sm text-gray-300">
+                              {project.technologies?.map((tech: string) => (
+                                <span key={tech}>{tech}</span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Background Image */}
+                        <div
+                          className={`w-[70%] absolute ${index % 2 !== 0 ? "left-0" : "right-0"} top-0 h-full overflow-hidden`}
+                        >
+                          <img
+                            src={
+                              project.image_url ||
+                              "https://images.unsplash.com/photo-1557821552-17105176677c?w=1200&q=80"
+                            }
+                            alt={project.title}
+                            className="w-full h-full object-cover opacity-50 group-hover:opacity-60 group-hover:scale-105 transition-all duration-500"
+                          />
+                        </div>
+                      </div>
                     </div>
 
                     {/* Mobile Layout */}
                     <div className="md:hidden rounded-lg overflow-hidden border border-primary/20 bg-background/40 backdrop-blur-sm">
-                      <div className="w-full p-4 bg-[#0a0a1a]">
-                        <TerminalVisual />
+                      <div className="w-full h-48 overflow-hidden">
+                        <img
+                          src={
+                            project.image_url ||
+                            "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&q=80"
+                          }
+                          alt={project.title}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                      <div className="p-6 bg-[#0a0a1a] border-t border-primary/10">
+                      <div className="p-6 bg-[#0a0a1a]">
                         <p className="text-primary font-mono text-xs mb-2">
                           Featured Project
                         </p>
-                        <h3 className="text-2xl font-bold text-white mb-3 font-mono">
+                        <h3 className="text-2xl font-bold text-white mb-3">
                           {project.title}
                         </h3>
                         <p className="text-slate-300 leading-relaxed mb-4 text-sm">
@@ -389,96 +487,6 @@ export function Home() {
                             <span key={tech}>{tech}</span>
                           ))}
                         </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                 </Link>
-                );
-              }
-
-              return (
-                <Link key={project.id} to={`/projects/${project.id}`} className="block">
-                  <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    className="relative group cursor-pointer"
-                  >
-                    {/* Desktop Layout */}
-                  <div className="hidden md:block relative rounded-lg overflow-hidden border border-primary/20 bg-background/40 backdrop-blur-sm hover:border-primary/50 transition-colors duration-300">
-                    <div
-                      className={`relative h-[400px] w-full flex items-stretch ${index % 2 !== 0 ? "flex-row-reverse" : ""}`}
-                    >
-                      {/* Content Box */}
-                      <div className="w-[40%] relative z-10 p-8 md:p-10 flex flex-col justify-center">
-                        <div
-                          className="rounded-lg border border-primary/30 bg-background/80 backdrop-blur-xl p-6"
-                          style={{
-                            boxShadow:
-                              "inset 0 0 40px rgba(167, 139, 250, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4)",
-                          }}
-                        >
-                          <p className="text-primary font-mono text-sm mb-3">
-                            Featured Project
-                          </p>
-                          <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                            {project.title}
-                          </h3>
-                          <p className="text-gray-200 leading-relaxed mb-6">
-                            {project.description}
-                          </p>
-                          <div className="flex flex-wrap gap-3 font-mono text-sm text-gray-300">
-                            {project.technologies?.map((tech: string) => (
-                              <span key={tech}>{tech}</span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Background Image */}
-                      <div
-                        className={`w-[70%] absolute ${index % 2 !== 0 ? "left-0" : "right-0"} top-0 h-full overflow-hidden`}
-                      >
-                        <img
-                          src={
-                            project.image_url ||
-                            "https://images.unsplash.com/photo-1557821552-17105176677c?w=1200&q=80"
-                          }
-                          alt={project.title}
-                          className="w-full h-full object-cover opacity-50 group-hover:opacity-60 group-hover:scale-105 transition-all duration-500"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Mobile Layout */}
-                  <div className="md:hidden rounded-lg overflow-hidden border border-primary/20 bg-background/40 backdrop-blur-sm">
-                    <div className="w-full h-48 overflow-hidden">
-                      <img
-                        src={
-                          project.image_url ||
-                          "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&q=80"
-                        }
-                        alt={project.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="p-6 bg-[#0a0a1a]">
-                      <p className="text-primary font-mono text-xs mb-2">
-                        Featured Project
-                      </p>
-                      <h3 className="text-2xl font-bold text-white mb-3">
-                        {project.title}
-                      </h3>
-                      <p className="text-slate-300 leading-relaxed mb-4 text-sm">
-                        {project.description}
-                      </p>
-                      <div className="flex flex-wrap gap-2 font-mono text-xs text-gray-400">
-                        {project.technologies?.map((tech: string) => (
-                          <span key={tech}>{tech}</span>
-                        ))}
-                      </div>
                       </div>
                     </div>
                   </motion.div>
