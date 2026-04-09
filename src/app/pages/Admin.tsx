@@ -143,6 +143,55 @@ export function Admin() {
     }
   };
 
+  const [isGalleryUploading, setIsGalleryUploading] = useState(false);
+
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    try {
+      setIsGalleryUploading(true);
+      const newUrls: string[] = [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (!file.type.startsWith('image/')) continue;
+
+        const fileExt = file.name.split('.').pop();
+        const fileName = `gallery_${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('project-images')
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('project-images')
+          .getPublicUrl(filePath);
+
+        newUrls.push(publicUrl);
+      }
+
+      if (newUrls.length > 0) {
+        setFormData(prev => ({ ...prev, galleryImages: [...prev.galleryImages, ...newUrls] }));
+        toast.success(`Successfully uploaded ${newUrls.length} image(s)!`);
+      }
+    } catch (error: any) {
+      toast.error('Failed to upload gallery images', { description: error.message });
+    } finally {
+      setIsGalleryUploading(false);
+    }
+  };
+
+  const removeGalleryImage = (indexToRemove: number) => {
+    setFormData(prev => ({
+      ...prev,
+      galleryImages: prev.galleryImages.filter((_, idx) => idx !== indexToRemove)
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -1262,7 +1311,56 @@ export function Admin() {
                   </div>
                 </div>
               </div>
-
+              <div className="md:col-span-2">
+                <label className="block mb-2 text-sm">
+                  Gallery Images <span className="text-muted-foreground text-xs">(optional, multiple supported)</span>
+                </label>
+                <div className="flex flex-col gap-3">
+                  {formData.galleryImages && formData.galleryImages.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-2">
+                      {formData.galleryImages.map((imgUrl, idx) => (
+                        <div key={idx} className="relative w-full h-24 rounded-lg overflow-hidden bg-accent border border-border group">
+                          <img 
+                            src={imgUrl} 
+                            alt={`Gallery preview ${idx+1}`} 
+                            className="w-full h-full object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeGalleryImage(idx)}
+                            className="absolute top-1 right-1 p-1 bg-background/80 hover:bg-destructive/80 rounded-md text-foreground transition-colors opacity-0 group-hover:opacity-100"
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleGalleryUpload}
+                      disabled={isGalleryUploading}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
+                    />
+                    <div className={`w-full px-4 py-8 rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center gap-3 ${isGalleryUploading ? 'bg-accent/50 text-muted-foreground' : 'bg-transparent hover:bg-accent hover:border-primary/50 text-foreground'} transition-colors`}>
+                      {isGalleryUploading ? (
+                        <>
+                          <Loader2 className="animate-spin text-primary" size={28} />
+                          <span className="font-mono text-sm">Uploading to Supabase...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Image size={28} className="text-muted-foreground" />
+                          <span className="font-mono text-sm">Click or drag images to add to gallery</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div className="md:col-span-2">
                 <label className="block mb-2 text-sm">
                   Demo Video URL
