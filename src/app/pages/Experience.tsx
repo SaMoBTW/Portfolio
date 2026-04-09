@@ -245,19 +245,8 @@ export function Experience() {
                   href="/Full_resume.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative inline-flex items-center justify-center gap-3 px-8 py-5 rounded-lg bg-primary text-white font-mono text-sm md:text-base font-bold overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl w-full sm:w-auto"
-                  style={{
-                    boxShadow:
-                      "0 0 40px rgba(167, 139, 250, 0.6), 0 8px 32px rgba(167, 139, 250, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.1)",
-                  }}
+                  className="group relative inline-flex items-center justify-center gap-3 px-8 py-5 rounded-lg border border-primary text-primary font-mono text-sm md:text-base font-bold overflow-hidden transition-all duration-300 hover:scale-105 hover:bg-primary/10 w-full sm:w-auto"
                 >
-                  <div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{
-                      transform: "translateX(-100%)",
-                      animation: "shine 2s infinite",
-                    }}
-                  ></div>
                   <Download size={20} className="relative z-10" />
                   <span className="relative z-10">Full Resume (PDF)</span>
                 </a>

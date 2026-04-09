@@ -75,7 +75,7 @@ export function Navigation() {
               </a>
               <a
                 href="/Full_resume.pdf"
-                className="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 transition-colors font-mono text-sm whitespace-nowrap"
+                className="px-4 py-2 border border-primary text-primary rounded hover:bg-primary/10 transition-colors font-mono text-sm whitespace-nowrap"
               >
                 Full Resume
               </a>
@@ -126,7 +126,7 @@ export function Navigation() {
                 </a>
                 <a
                   href="/Full_resume.pdf"
-                  className="flex items-center justify-center gap-3 px-4 py-3 rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors font-mono text-sm"
+                  className="flex items-center justify-center gap-3 px-4 py-3 rounded-lg border border-primary text-primary hover:bg-primary/10 transition-colors font-mono text-sm"
                 >
                   <FileText size={16} />
                   Full Resume
