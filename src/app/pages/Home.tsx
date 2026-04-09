@@ -239,12 +239,14 @@ export function Home() {
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    "React & Next.js",
+                    "React",
                     "TypeScript",
-                    "Node.js",
+                    "Supabase",
                     "Tailwind CSS",
                     "PostgreSQL",
                     "AWS",
+                    "CloudFlare",
+                    "Linux",
                   ].map((tech, index) => (
                     <motion.div
                       key={tech}
