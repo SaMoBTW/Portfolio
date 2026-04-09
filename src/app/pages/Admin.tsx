@@ -286,6 +286,11 @@ export function Admin() {
     setEditingProjectId(null);
   };
 
+  const handleAddProject = () => {
+    resetForm();
+    setIsDialogOpen(true);
+  };
+
   const stats = [
     { label: "Total Projects", value: projects.length.toString(), change: "+2 this month" },
     { label: "Total Views", value: "45.2K", change: "+12.5%" },
@@ -640,7 +645,7 @@ export function Admin() {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl tracking-tight">Manage Projects</h2>
                 <button
-                  onClick={() => setIsDialogOpen(true)}
+                  onClick={handleAddProject}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg bg-foreground text-background hover:opacity-90 transition-opacity"
                 >
                   <Plus size={18} />
@@ -703,7 +708,7 @@ export function Admin() {
                     </button>
                   ) : (
                     <button
-                      onClick={() => setIsDialogOpen(true)}
+                      onClick={handleAddProject}
                       className="px-4 py-2 rounded-lg bg-foreground text-background hover:opacity-90 transition-opacity"
                     >
                       Add your first project
@@ -1090,8 +1095,14 @@ export function Admin() {
       </section>
 
       {/* Add Project Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <Dialog
+        open={isDialogOpen}
+        onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) resetForm();
+        }}
+      >
+        <DialogContent className="w-[min(96vw,1200px)] max-w-none sm:max-w-none max-h-[92vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingProjectId ? "Edit Project" : "Create New Project"}</DialogTitle>
             <DialogDescription>
@@ -1102,9 +1113,9 @@ export function Admin() {
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+              <div className="lg:col-span-6">
                 <label className="block mb-2 text-sm">
                   Project Title <span className="text-destructive">*</span>
                 </label>
@@ -1120,89 +1131,7 @@ export function Admin() {
                 />
               </div>
 
-              <div className="md:col-span-2">
-                <label className="block mb-2 text-sm">
-                  Description <span className="text-destructive">*</span>
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  placeholder="Brief description of your project..."
-                  rows={3}
-                  className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors resize-none"
-                  required
-                  maxLength={1000}
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block mb-2 text-sm">
-                  Long Description / Markdown <span className="text-muted-foreground text-xs">(optional, for detail page)</span>
-                </label>
-                <textarea
-                  name="longDescription"
-                  value={formData.longDescription}
-                  onChange={handleInputChange}
-                  placeholder="Detailed markdown description of the project..."
-                  rows={8}
-                  className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors resize-y min-h-[150px] font-mono text-sm"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block mb-2 text-sm">
-                  Technologies <span className="text-muted-foreground text-xs">(comma-separated)</span>
-                </label>
-                <input
-                  type="text"
-                  name="technologies"
-                  value={formData.technologies}
-                  onChange={handleInputChange}
-                  placeholder="React, TypeScript, Node.js"
-                  className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors"
-                />
-              </div>
-
-              <div className="md:col-span-2 space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block mb-2 text-sm">Live Project URL</label>
-                    <input
-                      type="url"
-                      name="projectUrl"
-                      value={formData.projectUrl}
-                      onChange={handleInputChange}
-                      placeholder="https://myproject.com"
-                      className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm">GitHub URL</label>
-                    <input
-                      type="url"
-                      name="githubUrl"
-                      value={formData.githubUrl}
-                      onChange={handleInputChange}
-                      placeholder="https://github.com/SaMoBTW/project"
-                      className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block mb-2 text-sm">Demo Video URL <span className="text-muted-foreground text-xs">(YouTube/Vimeo embed)</span></label>
-                  <input
-                    type="url"
-                    name="demoVideoUrl"
-                    value={formData.demoVideoUrl}
-                    onChange={handleInputChange}
-                    placeholder="https://youtube.com/embed/..."
-                    className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors"
-                  />
-                </div>
-              </div>
-
-              <div>
+              <div className="lg:col-span-3">
                 <label className="block mb-2 text-sm">Category</label>
                 <select
                   name="category"
@@ -1219,19 +1148,7 @@ export function Admin() {
                 </select>
               </div>
 
-              <div>
-                <label className="block mb-2 text-sm">Completion Date</label>
-                <input
-                  type="month"
-                  name="completionDate"
-                  value={formData.completionDate}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors"
-                  placeholder="MM/YYYY"
-                />
-              </div>
-
-              <div>
+              <div className="lg:col-span-3">
                 <label className="block mb-2 text-sm">Status</label>
                 <select
                   name="status"
@@ -1244,29 +1161,121 @@ export function Admin() {
                 </select>
               </div>
 
-              <div>
-                <label className="flex items-center justify-between mb-2 text-sm">
-                  <span>Feature on Homepage</span>
+              <div className="lg:col-span-12">
+                <label className="block mb-2 text-sm">
+                  Description <span className="text-destructive">*</span>
                 </label>
-                <button
-                  type="button"
-                  onClick={() => setFormData((prev) => ({ ...prev, featuredOnHomepage: !prev.featuredOnHomepage }))}
-                  className={`relative inline-flex h-11 w-20 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-background ${
-                    formData.featuredOnHomepage ? "bg-purple-500" : "bg-border"
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-7 w-7 transform rounded-full bg-white shadow-lg transition-transform ${
-                      formData.featuredOnHomepage ? "translate-x-12" : "translate-x-1"
-                    }`}
-                  />
-                </button>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {formData.featuredOnHomepage ? "Featured" : "Not featured"}
-                </p>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  placeholder="Brief description of your project..."
+                  rows={2}
+                  className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors resize-none"
+                  required
+                  maxLength={1000}
+                />
               </div>
 
-              <div className="md:col-span-2">
+              <div className="lg:col-span-8">
+                <label className="block mb-2 text-sm">
+                  Long Description / Markdown <span className="text-muted-foreground text-xs">(optional, for detail page)</span>
+                </label>
+                <textarea
+                  name="longDescription"
+                  value={formData.longDescription}
+                  onChange={handleInputChange}
+                  placeholder="Detailed markdown description of the project..."
+                  rows={6}
+                  className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors resize-y min-h-[150px] font-mono text-sm"
+                />
+              </div>
+
+              <div className="lg:col-span-4">
+                <label className="block mb-2 text-sm">
+                  Technologies <span className="text-muted-foreground text-xs">(comma-separated)</span>
+                </label>
+                <input
+                  type="text"
+                  name="technologies"
+                  value={formData.technologies}
+                  onChange={handleInputChange}
+                  placeholder="React, TypeScript, Node.js"
+                  className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors"
+                />
+                <div className="mt-4">
+                  <label className="block mb-2 text-sm">Completion Date</label>
+                  <input
+                    type="month"
+                    name="completionDate"
+                    value={formData.completionDate}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors"
+                    placeholder="MM/YYYY"
+                  />
+                </div>
+                <div className="mt-4">
+                  <label className="flex items-center justify-between mb-2 text-sm">
+                    <span>Feature on Homepage</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setFormData((prev) => ({ ...prev, featuredOnHomepage: !prev.featuredOnHomepage }))}
+                    className={`relative inline-flex h-11 w-20 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-background ${
+                      formData.featuredOnHomepage ? "bg-purple-500" : "bg-border"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-7 w-7 transform rounded-full bg-white shadow-lg transition-transform ${
+                        formData.featuredOnHomepage ? "translate-x-12" : "translate-x-1"
+                      }`}
+                    />
+                  </button>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {formData.featuredOnHomepage ? "Featured" : "Not featured"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="lg:col-span-12 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block mb-2 text-sm">Live Project URL</label>
+                  <input
+                    type="url"
+                    name="projectUrl"
+                    value={formData.projectUrl}
+                    onChange={handleInputChange}
+                    placeholder="https://myproject.com"
+                    className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm">GitHub URL</label>
+                  <input
+                    type="url"
+                    name="githubUrl"
+                    value={formData.githubUrl}
+                    onChange={handleInputChange}
+                    placeholder="https://github.com/SaMoBTW/project"
+                    className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm">
+                    Demo Video URL <span className="text-muted-foreground text-xs">(YouTube/Vimeo embed)</span>
+                  </label>
+                  <input
+                    type="url"
+                    name="demoVideoUrl"
+                    value={formData.demoVideoUrl}
+                    onChange={handleInputChange}
+                    placeholder="https://youtube.com/embed/..."
+                    className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div className="lg:col-span-6">
                 <label className="block mb-2 text-sm">
                   Image Upload
                 </label>
@@ -1311,7 +1320,7 @@ export function Admin() {
                   </div>
                 </div>
               </div>
-              <div className="md:col-span-2">
+              <div className="lg:col-span-6">
                 <label className="block mb-2 text-sm">
                   Gallery Images <span className="text-muted-foreground text-xs">(optional, multiple supported)</span>
                 </label>
@@ -1360,46 +1369,6 @@ export function Admin() {
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className="md:col-span-2">
-                <label className="block mb-2 text-sm">
-                  Demo Video URL
-                </label>
-                <input
-                  type="url"
-                  name="demoVideoUrl"
-                  value={formData.demoVideoUrl}
-                  onChange={handleInputChange}
-                  placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
-                  className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Optional: Link to a video demo or walkthrough
-                </p>
-              </div>
-
-              <div>
-                <label className="block mb-2 text-sm">Project URL</label>
-                <input
-                  type="url"
-                  name="projectUrl"
-                  value={formData.projectUrl}
-                  onChange={handleInputChange}
-                  placeholder="https://example.com"
-                  className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors"
-                />
-              </div>
-
-              <div>
-                <label className="block mb-2 text-sm">GitHub URL</label>
-                <input
-                  type="url"
-                  name="githubUrl"
-                  value={formData.githubUrl}
-                  onChange={handleInputChange}
-                  placeholder="https://github.com/username/repo"
-                  className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors"
-                />
               </div>
             </div>
 
