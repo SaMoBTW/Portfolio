@@ -139,12 +139,19 @@ export function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.5 }}
+                className="flex flex-wrap items-center gap-4"
               >
                 <Link
                   to="/projects"
                   className="inline-flex items-center gap-2 px-7 py-4 border border-primary text-primary rounded hover:bg-primary/10 transition-all duration-300 font-mono text-sm"
                 >
                   Check out my work!
+                </Link>
+                <Link
+                  to="/experience"
+                  className="inline-flex items-center gap-2 px-7 py-4 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-all duration-300 font-mono text-sm font-semibold"
+                >
+                  View Experience
                 </Link>
               </motion.div>
             </div>
