@@ -286,6 +286,11 @@ export function Admin() {
     setEditingProjectId(null);
   };
 
+  const handleAddProject = () => {
+    resetForm();
+    setIsDialogOpen(true);
+  };
+
   const stats = [
     { label: "Total Projects", value: projects.length.toString(), change: "+2 this month" },
     { label: "Total Views", value: "45.2K", change: "+12.5%" },
@@ -640,7 +645,7 @@ export function Admin() {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl tracking-tight">Manage Projects</h2>
                 <button
-                  onClick={() => setIsDialogOpen(true)}
+                  onClick={handleAddProject}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg bg-foreground text-background hover:opacity-90 transition-opacity"
                 >
                   <Plus size={18} />
@@ -703,7 +708,7 @@ export function Admin() {
                     </button>
                   ) : (
                     <button
-                      onClick={() => setIsDialogOpen(true)}
+                      onClick={handleAddProject}
                       className="px-4 py-2 rounded-lg bg-foreground text-background hover:opacity-90 transition-opacity"
                     >
                       Add your first project
@@ -1090,7 +1095,13 @@ export function Admin() {
       </section>
 
       {/* Add Project Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog
+        open={isDialogOpen}
+        onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) resetForm();
+        }}
+      >
         <DialogContent className="w-[min(96vw,1200px)] max-w-none sm:max-w-none max-h-[92vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingProjectId ? "Edit Project" : "Create New Project"}</DialogTitle>
