@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { ExternalLink, Github, Folder } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useAsync } from "../hooks";
 import { supabase } from "../lib/supabase";
 
