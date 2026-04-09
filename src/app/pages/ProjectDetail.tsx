@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import { useAsync } from "../hooks";
 import { supabase } from "../lib/supabase";
@@ -6,6 +7,23 @@ import { ArrowLeft, ExternalLink, Github, MonitorPlay, Calendar, Tag, Layers } f
 
 export function ProjectDetail() {
   const { projectId } = useParams<{ projectId: string }>();
+  const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSelectedGalleryImage(null);
+      }
+    };
+
+    if (selectedGalleryImage) {
+      window.addEventListener("keydown", handleEscape);
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [selectedGalleryImage]);
 
   const { data: project, loading, error } = useAsync(async () => {
     if (!projectId) return null;
@@ -142,9 +160,14 @@ export function ProjectDetail() {
                 <h2 className="text-2xl font-bold text-white mb-6 border-b border-border/50 pb-4">Gallery</h2>
                 <div className="grid grid-cols-2 gap-4">
                   {project.gallery_images.map((img: string, idx: number) => (
-                    <div key={idx} className="rounded-lg overflow-hidden border border-border shadow-lg">
+                    <button
+                      type="button"
+                      key={idx}
+                      onClick={() => setSelectedGalleryImage(img)}
+                      className="rounded-lg overflow-hidden border border-border shadow-lg text-left cursor-zoom-in"
+                    >
                       <img src={img} alt={`Gallery ${idx+1}`} className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500" />
-                    </div>
+                    </button>
                   ))}
                 </div>
               </motion.section>
@@ -220,6 +243,30 @@ export function ProjectDetail() {
           </motion.div>
         </div>
       </div>
+      {selectedGalleryImage && (
+        <div
+          className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm p-4 md:p-8 flex items-center justify-center"
+          onClick={() => setSelectedGalleryImage(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Gallery image preview"
+        >
+          <button
+            type="button"
+            onClick={() => setSelectedGalleryImage(null)}
+            className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 rounded-full bg-background/80 hover:bg-background text-foreground border border-border transition-colors"
+            aria-label="Close image preview"
+          >
+            ×
+          </button>
+          <img
+            src={selectedGalleryImage}
+            alt="Selected gallery preview"
+            className="max-w-full max-h-full object-contain rounded-lg border border-border shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }
