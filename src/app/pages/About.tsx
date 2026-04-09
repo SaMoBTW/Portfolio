@@ -7,14 +7,20 @@ import { supabase } from "../lib/supabase";
 
 export function About() {
   const { data: workspaceImagesData } = useAsync(async () => {
-    const { data, error } = await supabase.from('workspace_images').select('*').order('order_index', { ascending: true });
+    const { data, error } = await supabase
+      .from("workspace_images")
+      .select("*")
+      .order("order_index", { ascending: true });
     if (error) throw error;
     return data || [];
   });
   const workspaceImages = workspaceImagesData || [];
 
   const { data: albumsData } = useAsync(async () => {
-    const { data, error } = await supabase.from('albums').select('*').order('order_index', { ascending: true });
+    const { data, error } = await supabase
+      .from("albums")
+      .select("*")
+      .order("order_index", { ascending: true });
     if (error) throw error;
     return data || [];
   });
@@ -50,7 +56,9 @@ export function About() {
               {/* Active Tab */}
               <div className="flex items-center gap-2 px-4 py-2 bg-background/80 border-r border-border/50 min-w-[160px]">
                 <FileCode className="w-4 h-4 text-primary" />
-                <span className="text-xs text-foreground font-mono">about.tsx</span>
+                <span className="text-xs text-foreground font-mono">
+                  about.tsx
+                </span>
               </div>
               {/* Empty Tab Bar Space */}
               <div className="flex-1"></div>
@@ -64,14 +72,26 @@ export function About() {
                   <div className="flex gap-4">
                     {/* Line Numbers */}
                     <div className="hidden md:flex flex-col items-end pt-2 pr-4 border-r border-slate-700/30 select-none">
-                      <span className="text-slate-600 font-mono text-xs leading-relaxed mb-[1.15rem]">1</span>
-                      <span className="text-slate-600 font-mono text-xs leading-relaxed mb-[1.15rem]">2</span>
-                      <span className="text-slate-600 font-mono text-xs leading-relaxed mb-[1.15rem]">3</span>
-                      <span className="text-slate-600 font-mono text-xs leading-relaxed mb-[1.15rem]">4</span>
-                      <span className="text-slate-600 font-mono text-xs leading-relaxed mb-[1.15rem]">5</span>
-                      <span className="text-slate-600 font-mono text-xs leading-relaxed">6</span>
+                      <span className="text-slate-600 font-mono text-xs leading-relaxed mb-[1.15rem]">
+                        1
+                      </span>
+                      <span className="text-slate-600 font-mono text-xs leading-relaxed mb-[1.15rem]">
+                        2
+                      </span>
+                      <span className="text-slate-600 font-mono text-xs leading-relaxed mb-[1.15rem]">
+                        3
+                      </span>
+                      <span className="text-slate-600 font-mono text-xs leading-relaxed mb-[1.15rem]">
+                        4
+                      </span>
+                      <span className="text-slate-600 font-mono text-xs leading-relaxed mb-[1.15rem]">
+                        5
+                      </span>
+                      <span className="text-slate-600 font-mono text-xs leading-relaxed">
+                        6
+                      </span>
                     </div>
-                    
+
                     {/* Main Content */}
                     <div className="flex-1">
                       <h1 className="text-3xl md:text-5xl font-bold mb-6 text-foreground">
@@ -82,18 +102,19 @@ export function About() {
                       </h1>
                       <div className="space-y-4 text-slate-300 text-base md:text-lg leading-relaxed">
                         <p>
-                          I'm a software engineer who believes that the best code is
-                          clean, intentional, and built with purpose. I love diving
-                          deep into systems architecture, whether it's optimizing a
-                          microservice or building out my home media server with Docker
-                          and Plex.
+                          I'm a software engineer who believes that the best
+                          code is clean, intentional, and built with purpose. I
+                          love diving deep into systems architecture, whether
+                          it's optimizing a microservice or building out my home
+                          media server with Docker and Plex.
                         </p>
                         <p>
-                          Beyond the terminal, I'm fascinated by the intersection of
-                          tech and culture—how music, art, and storytelling shape the
-                          way we build and interact with technology. When I'm not
-                          writing code, you'll find me exploring new music, tweaking my
-                          workspace setup, or learning from the creators who inspire me.
+                          Beyond the terminal, I'm fascinated by the
+                          intersection of tech and culture—how music, art, and
+                          storytelling shape the way we build and interact with
+                          technology. When I'm not writing code, you'll find me
+                          exploring new music, tweaking my workspace setup, or
+                          learning from the creators who inspire me.
                         </p>
                       </div>
                     </div>
@@ -114,9 +135,7 @@ export function About() {
                         "inset 0 0 40px rgba(167, 139, 250, 0.15), 0 0 30px rgba(167, 139, 250, 0.2)",
                     }}
                   >
-                    <div
-                      className="relative w-full rounded overflow-hidden border border-primary/50 bg-primary/10"
-                    >
+                    <div className="relative w-full rounded overflow-hidden border border-primary/50 bg-primary/10">
                       <img
                         src={profileImg}
                         alt="Samir Mahmoud"
@@ -181,9 +200,7 @@ export function About() {
                   />
                   {image.alt && (
                     <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/90 via-black/50 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
-                      <p className="text-sm text-white/90">
-                        {image.alt}
-                      </p>
+                      <p className="text-sm text-white/90">{image.alt}</p>
                     </div>
                   )}
                 </motion.div>
