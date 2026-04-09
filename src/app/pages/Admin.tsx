@@ -47,6 +47,8 @@ export function Admin() {
   const [selectedMessage, setSelectedMessage] = useState<string | null>(null);
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isWorkspaceUploading, setIsWorkspaceUploading] = useState(false);
+  const [albumUploadingId, setAlbumUploadingId] = useState<number | null>(null);
 
   // ============================================
   // PROJECTS STATE
@@ -329,20 +331,50 @@ export function Admin() {
     await refetchMessages();
   };
 
-  const handleAddWorkspaceImage = async () => {
-    const dummyImages = [
-      "https://images.unsplash.com/photo-1593642532400-2682810df593?w=600&q=80",
-      "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=600&q=80",
-      "https://images.unsplash.com/photo-1600320254374-ce2d293c324e?w=600&q=80",
-      "https://images.unsplash.com/photo-1509343256512-d77a5ae5ca00?w=600&q=80",
-    ];
-    const randomImage = dummyImages[Math.floor(Math.random() * dummyImages.length)];
+  const handleWorkspaceUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Invalid file type'); return;
+    }
+
     try {
-      await supabase.from('workspace_images').insert([{ url: randomImage, order_index: workspaceImages.length }]);
-      toast.success("Workspace image added!");
+      setIsWorkspaceUploading(true);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+      const { error: uploadError } = await supabase.storage.from('workspace-images').upload(fileName, file);
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage.from('workspace-images').getPublicUrl(fileName);
+
+      await supabase.from('workspace_images').insert([{ url: publicUrl, order_index: workspaceImages.length, alt: '' }]);
+      toast.success("Workspace image uploaded!");
       await refetchWorkspaceImages();
     } catch(err: any) {
-      toast.error("Failed to add image", { description: err.message });
+      toast.error("Failed to upload image", { description: err.message });
+    } finally {
+      setIsWorkspaceUploading(false);
+    }
+  };
+
+  const handleAlbumUpload = async (e: React.ChangeEvent<HTMLInputElement>, albumId: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setAlbumUploadingId(albumId);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+      const { error: uploadError } = await supabase.storage.from('album-covers').upload(fileName, file);
+      if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage.from('album-covers').getPublicUrl(fileName);
+      await supabase.from('albums').update({ url: publicUrl }).eq('id', albumId);
+      toast.success("Album cover uploaded!");
+      await refetchAlbums();
+    } catch(err: any) {
+      toast.error("Failed to upload album cover", { description: err.message });
+    } finally {
+      setAlbumUploadingId(null);
     }
   };
 
@@ -785,41 +817,61 @@ export function Admin() {
                 </h3>
                 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                  {workspaceImages.map((img: any, index) => (
+                  {workspaceImages.map((img: any, index: number) => (
                     <div key={img.id || index} className="relative group aspect-square rounded-lg overflow-hidden border border-border/50 bg-accent">
                       <img src={img.url} alt={`Workspace ${index + 1}`} className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <button
-                          onClick={async () => {
-                            try {
-                              await supabase.from('workspace_images').delete().eq('id', img.id);
-                              toast.success("Image removed");
-                              await refetchWorkspaceImages();
-                            } catch (err: any) {
-                              toast.error("Failed to remove image", { description: err.message });
-                            }
-                          }}
-                          className="p-2 rounded-lg bg-destructive text-white"
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                      <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col p-3">
+                        <div className="flex justify-end">
+                          <button
+                            onClick={async () => {
+                              try {
+                                await supabase.from('workspace_images').delete().eq('id', img.id);
+                                toast.success("Image removed");
+                                await refetchWorkspaceImages();
+                              } catch (err: any) {
+                                toast.error("Failed to remove image", { description: err.message });
+                              }
+                            }}
+                            className="p-1.5 rounded-lg bg-destructive text-white hover:bg-destructive/90 transition-colors"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                        <div className="flex-1 flex items-end">
+                          <textarea
+                            defaultValue={img.alt || ''}
+                            placeholder="Add a one-sentence description..."
+                            onBlur={async (e) => {
+                              if (e.target.value !== img.alt) {
+                                await supabase.from('workspace_images').update({ alt: e.target.value }).eq('id', img.id);
+                                toast.success("Description updated");
+                                refetchWorkspaceImages();
+                              }
+                            }}
+                            className="w-full bg-transparent text-white text-sm outline-none resize-none placeholder:text-white/50 border-b border-transparent focus:border-white/30 transition-colors bg-black/20 p-2 rounded"
+                            rows={3}
+                          />
+                        </div>
                       </div>
                     </div>
                   ))}
                   
                   {/* Upload New Photo Dropzone */}
-                  <div className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-primary transition-colors flex flex-col items-center justify-center cursor-pointer bg-accent/30">
-                    <Upload className="mb-2 text-muted-foreground" size={32} />
-                    <span className="text-xs text-muted-foreground text-center px-2">Upload New Photo</span>
-                  </div>
+                  <label className="relative aspect-square rounded-lg border-2 border-dashed border-border hover:border-primary transition-colors flex flex-col items-center justify-center cursor-pointer bg-accent/30 overflow-hidden">
+                    <input type="file" accept="image/*" className="hidden" disabled={isWorkspaceUploading} onChange={handleWorkspaceUpload} />
+                    {isWorkspaceUploading ? (
+                      <>
+                        <Loader2 className="animate-spin text-primary mb-2" size={32} />
+                        <span className="text-xs text-muted-foreground text-center px-2">Uploading...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="mb-2 text-muted-foreground" size={32} />
+                        <span className="text-xs text-muted-foreground text-center px-2">Upload New Photo</span>
+                      </>
+                    )}
+                  </label>
                 </div>
-                <button
-                  onClick={handleAddWorkspaceImage}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border hover:bg-accent transition-colors"
-                >
-                  <Plus size={18} />
-                  Add Random Image
-                </button>
               </div>
 
               {/* Heavy Rotation Section */}
@@ -846,18 +898,16 @@ export function Admin() {
                           className="w-full px-3 py-2 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors text-sm mb-2"
                           placeholder="Album Title"
                         />
-                        <input
-                          type="url"
-                          defaultValue={album.url}
-                          onBlur={async (e) => {
-                            if (e.target.value !== album.url) {
-                              await supabase.from('albums').update({ url: e.target.value }).eq('id', album.id);
-                              refetchAlbums();
-                            }
-                          }}
-                          className="w-full px-3 py-2 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors text-sm"
-                          placeholder="Image URL"
-                        />
+                        <div className="flex flex-col gap-2 relative">
+                          <label className="relative inline-flex items-center justify-center cursor-pointer bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 rounded-lg px-3 py-2 transition-colors text-sm font-medium w-full lg:w-1/2 mt-1">
+                            <input type="file" accept="image/*" className="hidden" onChange={(e) => handleAlbumUpload(e, album.id)} disabled={albumUploadingId === album.id} />
+                            {albumUploadingId === album.id ? (
+                              <><Loader2 className="animate-spin text-primary mr-2" size={14}/> Uploading...</>
+                            ) : (
+                              <><Upload size={14} className="mr-2"/> Upload Cover Art</>
+                            )}
+                          </label>
+                        </div>
                       </div>
                       <button
                         onClick={async () => {
@@ -880,7 +930,7 @@ export function Admin() {
                     onClick={async () => {
                       try {
                         const newTitle = "New Album";
-                        await supabase.from('albums').insert([{ url: "https://images.unsplash.com/photo-1638109879562-1f98abe0d45f?w=300&q=80", title: newTitle, order_index: albumUrls.length }]);
+                        await supabase.from('albums').insert([{ url: "", title: newTitle, order_index: albumUrls.length }]);
                         toast.success("Album added");
                         await refetchAlbums();
                       } catch (err: any) {

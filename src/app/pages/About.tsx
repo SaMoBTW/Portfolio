@@ -176,9 +176,16 @@ export function About() {
                 >
                   <img
                     src={image.url}
-                    alt={"Workspace"}
+                    alt={image.alt || "Workspace"}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
+                  {image.alt && (
+                    <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/90 via-black/50 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
+                      <p className="text-sm text-white/90">
+                        {image.alt}
+                      </p>
+                    </div>
+                  )}
                 </motion.div>
               ))}
             </Masonry>
