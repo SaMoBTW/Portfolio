@@ -4,7 +4,11 @@ import { motion } from "motion/react";
 export function Footer() {
   const socialLinks = [
     { icon: Github, href: "https://github.com/SaMoBTW", label: "GitHub" },
-    { icon: Linkedin, href: "https://linkedin.com/in/SamirMahmoud89", label: "LinkedIn" },
+    {
+      icon: Linkedin,
+      href: "https://linkedin.com/in/SamirMahmoud89",
+      label: "LinkedIn",
+    },
     { icon: Youtube, href: "https://youtube.com", label: "YouTube" },
     { icon: Mail, href: "mailto:meemok2111@gmail.com", label: "Email" },
   ];
@@ -48,7 +52,7 @@ export function Footer() {
               rel="noopener noreferrer"
               className="hover:text-primary transition-colors"
             >
-              Built by Samir
+              Built by Samir Mahmoud
             </a>
           </motion.div>
         </div>

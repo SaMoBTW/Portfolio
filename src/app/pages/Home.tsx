@@ -438,30 +438,15 @@ export function Home() {
       </section>
 
       {/* Contact Section */}
-      <section className="py-32 relative">
-        <div className="mx-auto max-w-2xl px-6 lg:px-8 text-center">
+      <section className="py-32 relative" id="contact">
+        <div className="mx-auto max-w-5xl px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="space-y-6"
           >
-            <span className="text-primary font-mono text-base">What's Next?</span>
-            <h2 className="text-5xl font-bold">Get In Touch</h2>
-            <p className="text-muted-foreground text-lg max-w-lg mx-auto leading-relaxed">
-              I'm currently looking for new opportunities. Whether you have a
-              question or just want to say hi, I'll try my best to get back to you!
-            </p>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="pt-8"
-            >
-              <ContactForm />
-            </motion.div>
+            <ContactForm />
           </motion.div>
         </div>
       </section>

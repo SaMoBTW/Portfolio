@@ -47,11 +47,24 @@ export function ContactForm() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="max-w-2xl mx-auto mt-12 bg-accent/40 backdrop-blur-sm border border-border p-8 rounded-xl shadow-2xl relative overflow-hidden text-left"
-    >
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-purple-500 opacity-50"></div>
+    <div className="max-w-5xl mx-auto mt-12 bg-accent/40 backdrop-blur-sm border border-border rounded-xl shadow-2xl relative overflow-hidden text-left flex flex-col lg:flex-row">
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-purple-500 opacity-50 z-10"></div>
+      
+      {/* Left Column - Text Content */}
+      <div className="p-8 lg:p-12 lg:w-5/12 bg-background/40 border-b lg:border-b-0 lg:border-r border-border/50 flex flex-col justify-center relative">
+        <span className="text-primary font-mono text-sm tracking-wider uppercase mb-3 block">What's Next?</span>
+        <h2 className="text-4xl lg:text-5xl font-bold mb-6 tracking-tight">Get In Touch</h2>
+        <p className="text-muted-foreground text-base leading-relaxed">
+          I'm currently looking for new opportunities. Whether you have a
+          question or just want to say hi, I'll try my best to get back to you!
+        </p>
+      </div>
+
+      {/* Right Column - Form */}
+      <form
+        onSubmit={handleSubmit}
+        className="p-8 lg:p-12 lg:w-7/12 flex-1"
+      >
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
@@ -146,6 +159,7 @@ export function ContactForm() {
           )}
         </button>
       </div>
-    </form>
+      </form>
+    </div>
   );
 }
