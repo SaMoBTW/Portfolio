@@ -66,12 +66,20 @@ export function Navigation() {
                 <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
               </Link>
             ))}
-            <a
-              href="/resume.pdf"
-              className="ml-4 px-4 py-2 border border-primary text-primary rounded hover:bg-primary/10 transition-colors font-mono text-sm"
-            >
-              Resume
-            </a>
+            <div className="flex items-center gap-3 ml-4">
+              <a
+                href="/IT_resume.pdf"
+                className="px-4 py-2 border border-primary text-primary rounded hover:bg-primary/10 transition-colors font-mono text-sm whitespace-nowrap"
+              >
+                IT Resume
+              </a>
+              <a
+                href="/Full_resume.pdf"
+                className="px-4 py-2 border border-primary text-primary rounded hover:bg-primary/10 transition-colors font-mono text-sm whitespace-nowrap"
+              >
+                Full Resume
+              </a>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -108,13 +116,22 @@ export function Navigation() {
                   {link.label}
                 </Link>
               ))}
-              <a
-                href="/resume.pdf"
-                className="flex items-center gap-3 px-4 py-3 rounded-lg border border-primary text-primary hover:bg-primary/10 transition-colors font-mono text-sm"
-              >
-                <FileText size={16} />
-                Resume
-              </a>
+              <div className="flex flex-col gap-2 mt-2">
+                <a
+                  href="/IT_resume.pdf"
+                  className="flex items-center justify-center gap-3 px-4 py-3 rounded-lg border border-primary text-primary hover:bg-primary/10 transition-colors font-mono text-sm"
+                >
+                  <FileText size={16} />
+                  IT Resume
+                </a>
+                <a
+                  href="/Full_resume.pdf"
+                  className="flex items-center justify-center gap-3 px-4 py-3 rounded-lg border border-primary text-primary hover:bg-primary/10 transition-colors font-mono text-sm"
+                >
+                  <FileText size={16} />
+                  Full Resume
+                </a>
+              </div>
             </div>
           </motion.div>
         )}

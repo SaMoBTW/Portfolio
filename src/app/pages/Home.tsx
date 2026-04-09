@@ -5,6 +5,7 @@ import profileImg from "../../assets/d7db82655c6674b4948dd2ab7cad4334dee31f29.pn
 import { useAsync } from "../hooks";
 import { supabase } from "../lib/supabase";
 import { TerminalVisual } from "../components/TerminalVisual";
+import { ContactForm } from "../components/ContactForm";
 
 export function Home() {
   const { data: settingsData } = useAsync(async () => {
@@ -459,15 +460,7 @@ export function Home() {
               transition={{ delay: 0.3 }}
               className="pt-8"
             >
-              <a
-                href="mailto:hello@example.com"
-                className="inline-flex items-center gap-2 px-10 py-5 bg-primary text-white rounded hover:bg-primary/90 transition-all duration-300 font-mono text-base"
-                style={{
-                  boxShadow: 'inset 0 0 20px rgba(192, 132, 252, 0.4), 0 4px 20px rgba(167, 139, 250, 0.5)',
-                }}
-              >
-                Say Hello
-              </a>
+              <ContactForm />
             </motion.div>
           </motion.div>
         </div>
