@@ -5,35 +5,39 @@ import { useEffect, useState } from "react";
 export function SocialSidebar() {
   const [scrollRange, setScrollRange] = useState({ start: 0, end: 0 });
   const { scrollY } = useScroll();
-  
+
   useEffect(() => {
     const updateScrollRange = () => {
       const docHeight = document.documentElement.scrollHeight;
       const windowHeight = window.innerHeight;
       const maxScroll = docHeight - windowHeight;
-      
+
       setScrollRange({
         start: maxScroll - 300, // Start fading 300px before bottom
-        end: maxScroll - 100,    // Fully hidden 100px before bottom
+        end: maxScroll - 100, // Fully hidden 100px before bottom
       });
     };
-    
+
     updateScrollRange();
-    window.addEventListener('resize', updateScrollRange);
-    
-    return () => window.removeEventListener('resize', updateScrollRange);
+    window.addEventListener("resize", updateScrollRange);
+
+    return () => window.removeEventListener("resize", updateScrollRange);
   }, []);
-  
+
   // Calculate opacity based on scroll position relative to page bottom
   const opacity = useTransform(
     scrollY,
     [scrollRange.start, scrollRange.end],
-    [1, 0]
+    [1, 0],
   );
 
   const socialLinks = [
-    { icon: Github, href: "https://github.com", label: "GitHub" },
-    { icon: Linkedin, href: "https://linkedin.com", label: "LinkedIn" },
+    { icon: Github, href: "https://github.com/samobtw", label: "GitHub" },
+    {
+      icon: Linkedin,
+      href: "https://linkedin.com/in/samirmahmoud89",
+      label: "LinkedIn",
+    },
     { icon: Youtube, href: "https://youtube.com", label: "YouTube" },
   ];
 
@@ -72,7 +76,7 @@ export function SocialSidebar() {
         className="hidden xl:flex fixed right-10 bottom-0 flex-col items-center gap-6 z-40"
       >
         <a
-          href="mailto:hello@example.com"
+          href="mailto:meemok2111@gmail.com"
           className="text-muted-foreground hover:text-primary transition-colors font-mono text-xs tracking-wide vertical-text"
           style={{
             writingMode: "vertical-rl",

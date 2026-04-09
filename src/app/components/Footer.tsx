@@ -3,10 +3,10 @@ import { motion } from "motion/react";
 
 export function Footer() {
   const socialLinks = [
-    { icon: Github, href: "https://github.com", label: "GitHub" },
-    { icon: Linkedin, href: "https://linkedin.com", label: "LinkedIn" },
+    { icon: Github, href: "https://github.com/SaMoBTW", label: "GitHub" },
+    { icon: Linkedin, href: "https://linkedin.com/in/SamirMahmoud89", label: "LinkedIn" },
     { icon: Youtube, href: "https://youtube.com", label: "YouTube" },
-    { icon: Mail, href: "mailto:hello@example.com", label: "Email" },
+    { icon: Mail, href: "mailto:meemok2111@gmail.com", label: "Email" },
   ];
 
   return (
@@ -43,7 +43,7 @@ export function Footer() {
             className="text-muted-foreground font-mono text-sm"
           >
             <a
-              href="https://github.com"
+              href="https://github.com/SaMoBTW"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-primary transition-colors"

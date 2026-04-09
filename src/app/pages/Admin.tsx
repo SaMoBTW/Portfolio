@@ -251,9 +251,9 @@ export function Admin() {
     name: "Samir Mahmoud",
     tagline: "Full-Stack Developer & Designer",
     bio: "I build elegant solutions that blend functionality with beautiful design. Specializing in React, TypeScript, and modern web technologies.",
-    email: "hello@samirmahmoud.dev",
-    githubUrl: "https://github.com/samirmahmoud",
-    linkedinUrl: "https://linkedin.com/in/samirmahmoud",
+    email: "meemok2111@gmail.com",
+    githubUrl: "https://github.com/SaMoBTW",
+    linkedinUrl: "https://linkedin.com/in/SamirMahmoud89",
     twitterUrl: "https://twitter.com/samirmahmoud",
   });
 
