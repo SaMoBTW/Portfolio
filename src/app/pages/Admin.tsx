@@ -14,6 +14,7 @@ import {
   Image,
   Send,
   X,
+  Loader2,
 } from "lucide-react";
 import {
   Dialog,
@@ -45,6 +46,7 @@ export function Admin() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<string | null>(null);
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   // ============================================
   // PROJECTS STATE
@@ -100,6 +102,41 @@ export function Admin() {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Invalid file type. Please select an image.');
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('project-images')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('project-images')
+        .getPublicUrl(filePath);
+
+      setFormData(prev => ({ ...prev, imageUrl: publicUrl }));
+      toast.success('Image uploaded successfully!');
+    } catch (error: any) {
+      toast.error('Failed to upload image', { description: error.message });
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -1072,25 +1109,48 @@ export function Admin() {
 
               <div className="md:col-span-2">
                 <label className="block mb-2 text-sm">
-                  Image URL
+                  Image Upload
                 </label>
-                <div className="relative">
-                  <input
-                    type="url"
-                    name="imageUrl"
-                    value={formData.imageUrl}
-                    onChange={handleInputChange}
-                    placeholder="https://example.com/image.jpg"
-                    className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors pr-10"
-                  />
-                  <Upload
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                    size={18}
-                  />
+                <div className="flex flex-col gap-3">
+                  {formData.imageUrl && (
+                    <div className="relative w-full h-48 rounded-lg overflow-hidden bg-accent border border-border">
+                      <img 
+                        src={formData.imageUrl} 
+                        alt="Project preview" 
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFormData(prev => ({ ...prev, imageUrl: '' }))}
+                        className="absolute top-2 right-2 p-1.5 bg-background/80 hover:bg-background rounded-md text-foreground transition-colors"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  )}
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={isUploading}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
+                    />
+                    <div className={`w-full px-4 py-8 rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center gap-3 ${isUploading ? 'bg-accent/50 text-muted-foreground' : 'bg-transparent hover:bg-accent hover:border-primary/50 text-foreground'} transition-colors`}>
+                      {isUploading ? (
+                        <>
+                          <Loader2 className="animate-spin text-primary" size={28} />
+                          <span className="font-mono text-sm">Uploading to Supabase...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload size={28} className="text-muted-foreground" />
+                          <span className="font-mono text-sm">Click or drag an image to upload</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Paste an image URL or upload to an image hosting service
-                </p>
               </div>
 
               <div className="md:col-span-2">
