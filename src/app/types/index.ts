@@ -16,22 +16,25 @@
 // ============================================
 
 export interface Project {
-  id: number; // TODO: Change to string (UUID) when implementing Supabase
+  id: string | number;
   title: string;
   description: string;
+  longDescription?: string;
   status: ProjectStatus;
   views: number;
-  lastUpdated: string; // ISO date string
+  lastUpdated?: string;
+  created_at?: string;
   technologies: string[];
   imageUrl: string;
+  galleryImages?: string[];
   projectUrl: string;
   githubUrl: string;
   category: ProjectCategory;
   
   // Optional fields added in admin
-  demoVideoUrl?: string;
-  completionDate?: string; // ISO date string or month format (YYYY-MM)
-  featuredOnHomepage?: boolean;
+  demoVideoUrl?: string; // Match DB column
+  completionDate?: string; // Match DB column
+  featuredOnHomepage?: boolean; // Match DB column
 }
 
 export type ProjectStatus = "Published" | "Draft";
@@ -47,8 +50,10 @@ export type ProjectCategory =
 export interface ProjectFormData {
   title: string;
   description: string;
+  longDescription: string;
   technologies: string; // Comma-separated string, needs to be parsed
   imageUrl: string;
+  galleryImages: string[];
   demoVideoUrl: string;
   projectUrl: string;
   githubUrl: string;

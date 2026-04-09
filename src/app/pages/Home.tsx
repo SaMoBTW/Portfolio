@@ -331,15 +331,15 @@ export function Home() {
             {featuredProjects?.map((project: any, index: number) => {
               if (project.title?.trim().toLowerCase() === "home media server") {
                 return (
-                  <motion.div
-                    key={project.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    className="relative group"
-                  >
-                    {/* Desktop Layout */}
+                  <Link key={project.id} to={`/projects/${project.id}`} className="block">
+                    <motion.div
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6 }}
+                      className="relative group cursor-pointer"
+                    >
+                      {/* Desktop Layout */}
                     <div className="hidden md:block relative rounded-lg overflow-hidden border border-primary/20 bg-background/40 backdrop-blur-sm hover:border-primary/50 transition-colors duration-300">
                       <div
                         className={`relative h-[400px] w-full p-8 flex items-center gap-8 ${index % 2 !== 0 ? "flex-row-reverse" : ""}`}
@@ -392,19 +392,20 @@ export function Home() {
                       </div>
                     </div>
                   </motion.div>
+                 </Link>
                 );
               }
 
               return (
-                <motion.div
-                  key={project.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-                  className="relative group"
-                >
-                  {/* Desktop Layout */}
+                <Link key={project.id} to={`/projects/${project.id}`} className="block">
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="relative group cursor-pointer"
+                  >
+                    {/* Desktop Layout */}
                   <div className="hidden md:block relative rounded-lg overflow-hidden border border-primary/20 bg-background/40 backdrop-blur-sm hover:border-primary/50 transition-colors duration-300">
                     <div
                       className={`relative h-[400px] w-full flex items-stretch ${index % 2 !== 0 ? "flex-row-reverse" : ""}`}
@@ -478,9 +479,10 @@ export function Home() {
                           <span key={tech}>{tech}</span>
                         ))}
                       </div>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
+                  </motion.div>
+                </Link>
               );
             })}
           </div>

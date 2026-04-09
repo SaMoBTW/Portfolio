@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { ExternalLink, Github, Folder } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useAsync } from "../hooks";
 import { supabase } from "../lib/supabase";
 
@@ -44,84 +45,90 @@ export function Projects() {
         <div className="mx-auto max-w-6xl px-6 lg:px-8">
           <div className="space-y-32">
             {featuredProjects.map((project: any, index: number) => (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-                className="relative"
-              >
-                <div
-                  className={`grid md:grid-cols-12 gap-4 items-center ${
-                    index % 2 === 1 ? "" : ""
-                  }`}
+              <Link key={project.id} to={`/projects/${project.id}`} className="block">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                  className="relative group cursor-pointer"
                 >
-                  {/* Project Image */}
                   <div
-                    className={`md:col-span-7 relative group ${
-                      index % 2 === 1 ? "md:order-2" : ""
+                    className={`grid md:grid-cols-12 gap-4 items-center ${
+                      index % 2 === 1 ? "" : ""
                     }`}
                   >
-                    <div className="relative rounded overflow-hidden bg-primary/5">
-                      <img
-                        src={project.image_url || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80"}
-                        alt={project.title}
-                        className="w-full aspect-video object-cover opacity-50 group-hover:opacity-100 transition-opacity duration-300"
-                      />
-                      <div className="absolute inset-0 bg-primary/20 mix-blend-multiply group-hover:bg-transparent transition-all duration-300"></div>
+                    {/* Project Image */}
+                    <div
+                      className={`md:col-span-7 relative group-hover:scale-[1.02] transition-transform duration-500 ${
+                        index % 2 === 1 ? "md:order-2" : ""
+                      }`}
+                    >
+                      <div className="relative rounded overflow-hidden bg-primary/5">
+                        <img
+                          src={project.image_url || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80"}
+                          alt={project.title}
+                          className="w-full aspect-video object-cover opacity-50 group-hover:opacity-100 transition-opacity duration-300"
+                        />
+                        <div className="absolute inset-0 bg-primary/20 mix-blend-multiply group-hover:bg-transparent transition-all duration-300"></div>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Project Info */}
-                  <div
-                    className={`md:col-span-5 space-y-4 ${
-                      index % 2 === 1
-                        ? "md:order-1 md:text-left"
-                        : "md:text-right"
-                    }`}
-                  >
-                    <p className="text-primary font-mono text-sm">Featured Project</p>
-                    <h3 className="text-2xl font-bold">{project.title}</h3>
-                    <div className="bg-card p-6 rounded shadow-lg border border-border">
-                      <p className="text-muted-foreground">{project.description}</p>
-                    </div>
+                    {/* Project Info */}
                     <div
-                      className={`flex flex-wrap gap-3 font-mono text-sm text-muted-foreground ${
-                        index % 2 === 1 ? "" : "md:justify-end"
+                      className={`md:col-span-5 space-y-4 ${
+                        index % 2 === 1
+                          ? "md:order-1 md:text-left"
+                          : "md:text-right"
                       }`}
                     >
-                      {project.technologies?.map((tag: string) => (
-                        <span key={tag}>{tag}</span>
-                      ))}
-                    </div>
-                    <div
-                      className={`flex gap-4 ${
-                        index % 2 === 1 ? "" : "md:justify-end"
-                      }`}
-                    >
-                      {project.github_url && (
-                        <a
-                          href={project.github_url}
-                          className="text-foreground hover:text-primary transition-colors"
-                          aria-label="GitHub"
-                        >
-                          <Github size={20} />
-                        </a>
-                      )}
-                      {project.project_url && (
-                        <a
-                          href={project.project_url}
-                          className="text-foreground hover:text-primary transition-colors"
-                          aria-label="External Link"
-                        >
-                          <ExternalLink size={20} />
-                        </a>
-                      )}
+                      <p className="text-primary font-mono text-sm">Featured Project</p>
+                      <h3 className="text-2xl font-bold group-hover:text-primary transition-colors">{project.title}</h3>
+                      <div className="bg-card p-6 rounded shadow-lg border border-border">
+                        <p className="text-muted-foreground">{project.description}</p>
+                      </div>
+                      <div
+                        className={`flex flex-wrap gap-3 font-mono text-sm text-muted-foreground ${
+                          index % 2 === 1 ? "" : "md:justify-end"
+                        }`}
+                      >
+                        {project.technologies?.map((tag: string) => (
+                          <span key={tag}>{tag}</span>
+                        ))}
+                      </div>
+                      <div
+                        className={`flex gap-4 ${
+                          index % 2 === 1 ? "" : "md:justify-end"
+                        }`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {project.github_url && (
+                          <a
+                            href={project.github_url}
+                            className="text-foreground hover:text-primary transition-colors"
+                            aria-label="GitHub"
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <Github size={20} />
+                          </a>
+                        )}
+                        {project.project_url && (
+                          <a
+                            href={project.project_url}
+                            className="text-foreground hover:text-primary transition-colors"
+                            aria-label="External Link"
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <ExternalLink size={20} />
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
+              </Link>
             ))}
           </div>
         </div>
@@ -147,40 +154,44 @@ export function Projects() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {otherProjects.map((project: any, index: number) => (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.4 }}
-                className="group bg-card border border-border rounded p-8 hover:translate-y-[-5px] transition-all duration-300 hover:shadow-lg flex flex-col"
-              >
-                <div className="flex items-center justify-between mb-8">
-                  <Folder className="text-primary" size={40} />
-                  <div className="flex gap-4">
-                    {project.github_url && (
-                      <a
-                        href={project.github_url}
-                        className="text-muted-foreground hover:text-primary transition-colors"
-                        aria-label="GitHub"
-                      >
-                        <Github size={20} />
-                      </a>
-                    )}
-                    {project.project_url && (
-                      <a
-                        href={project.project_url}
-                        className="text-muted-foreground hover:text-primary transition-colors"
-                        aria-label="External Link"
-                      >
-                        <ExternalLink size={20} />
-                      </a>
-                    )}
+              <Link key={project.id} to={`/projects/${project.id}`}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1, duration: 0.4 }}
+                  className="group bg-card border border-border rounded p-8 hover:translate-y-[-5px] transition-all duration-300 hover:shadow-lg flex flex-col h-full cursor-pointer"
+                >
+                  <div className="flex items-center justify-between mb-8">
+                    <Folder className="text-primary" size={40} />
+                    <div className="flex gap-4" onClick={(e) => e.stopPropagation()}>
+                      {project.github_url && (
+                        <a
+                          href={project.github_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-muted-foreground hover:text-primary transition-colors"
+                          aria-label="GitHub"
+                        >
+                          <Github size={20} />
+                        </a>
+                      )}
+                      {project.project_url && (
+                        <a
+                          href={project.project_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-muted-foreground hover:text-primary transition-colors"
+                          aria-label="External Link"
+                        >
+                          <ExternalLink size={20} />
+                        </a>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">
-                  {project.title}
-                </h3>
+                  <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">
+                    {project.title}
+                  </h3>
                 <p className="text-muted-foreground text-sm mb-6 flex-1">
                   {project.description}
                 </p>
@@ -190,6 +201,7 @@ export function Projects() {
                   ))}
                 </div>
               </motion.div>
+            </Link>
             ))}
           </div>
         </div>

@@ -72,8 +72,10 @@ export function Admin() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    longDescription: "",
     technologies: "",
     imageUrl: "",
+    galleryImages: [] as string[],
     demoVideoUrl: "",
     projectUrl: "",
     githubUrl: "",
@@ -148,9 +150,11 @@ export function Admin() {
       const projectPayload = {
         title: formData.title,
         description: formData.description,
+        long_description: formData.longDescription,
         status: formData.status,
         technologies: formData.technologies.split(",").map((tech) => tech.trim()).filter(Boolean),
         image_url: formData.imageUrl,
+        gallery_images: formData.galleryImages,
         demo_video_url: formData.demoVideoUrl,
         project_url: formData.projectUrl,
         github_url: formData.githubUrl,
@@ -188,8 +192,10 @@ export function Admin() {
     setFormData({
       title: project.title,
       description: project.description,
+      longDescription: project.long_description || "",
       technologies: project.technologies ? project.technologies.join(", ") : "",
       imageUrl: project.image_url || "",
+      galleryImages: project.gallery_images || [],
       demoVideoUrl: project.demo_video_url || "",
       projectUrl: project.project_url || "",
       githubUrl: project.github_url || "",
@@ -216,8 +222,10 @@ export function Admin() {
     setFormData({
       title: "",
       description: "",
+      longDescription: "",
       technologies: "",
       imageUrl: "",
+      galleryImages: [] as string[],
       demoVideoUrl: "",
       projectUrl: "",
       githubUrl: "",
@@ -1081,6 +1089,20 @@ export function Admin() {
 
               <div className="md:col-span-2">
                 <label className="block mb-2 text-sm">
+                  Long Description / Markdown <span className="text-muted-foreground text-xs">(optional, for detail page)</span>
+                </label>
+                <textarea
+                  name="longDescription"
+                  value={formData.longDescription}
+                  onChange={handleInputChange}
+                  placeholder="Detailed markdown description of the project..."
+                  rows={8}
+                  className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors resize-y min-h-[150px] font-mono text-sm"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block mb-2 text-sm">
                   Technologies <span className="text-muted-foreground text-xs">(comma-separated)</span>
                 </label>
                 <input
@@ -1091,6 +1113,44 @@ export function Admin() {
                   placeholder="React, TypeScript, Node.js"
                   className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors"
                 />
+              </div>
+
+              <div className="md:col-span-2 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block mb-2 text-sm">Live Project URL</label>
+                    <input
+                      type="url"
+                      name="projectUrl"
+                      value={formData.projectUrl}
+                      onChange={handleInputChange}
+                      placeholder="https://myproject.com"
+                      className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm">GitHub URL</label>
+                    <input
+                      type="url"
+                      name="githubUrl"
+                      value={formData.githubUrl}
+                      onChange={handleInputChange}
+                      placeholder="https://github.com/SaMoBTW/project"
+                      className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm">Demo Video URL <span className="text-muted-foreground text-xs">(YouTube/Vimeo embed)</span></label>
+                  <input
+                    type="url"
+                    name="demoVideoUrl"
+                    value={formData.demoVideoUrl}
+                    onChange={handleInputChange}
+                    placeholder="https://youtube.com/embed/..."
+                    className="w-full px-4 py-3 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors"
+                  />
+                </div>
               </div>
 
               <div>
