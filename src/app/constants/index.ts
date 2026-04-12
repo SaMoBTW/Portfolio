@@ -38,7 +38,6 @@ export const TABLES = {
   WORKSPACE_IMAGES: 'workspace_images',
   ALBUMS: 'albums',
   SITE_SETTINGS: 'site_settings',
-  PAGE_VIEWS: 'page_views', // For analytics
 } as const;
 
 // ============================================
@@ -94,7 +93,6 @@ export const PROJECT_STATUSES = ['Published', 'Draft'] as const;
 
 export const ADMIN_TABS = {
   PROJECTS: 'projects',
-  ANALYTICS: 'analytics',
   INBOX: 'inbox',
   MEDIA: 'media',
   SETTINGS: 'settings',

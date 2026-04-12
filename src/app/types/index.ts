@@ -127,23 +127,7 @@ export interface SiteSettings {
   // user_id?: string; // Reference to admin user
 }
 
-// ============================================
-// ANALYTICS TYPES
-// ============================================
 
-export interface AnalyticsStats {
-  totalProjects: number;
-  totalViews: string;
-  avgViewTime: string;
-  
-  // TODO: Implement real analytics with Supabase
-  // Add fields for:
-  // - page_views by route
-  // - unique_visitors
-  // - bounce_rate
-  // - popular_projects
-  // - traffic_sources
-}
 
 // ============================================
 // AUTHENTICATION TYPES

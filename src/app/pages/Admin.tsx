@@ -3,12 +3,10 @@ import { motion } from "motion/react";
 import {
   LogOut,
   FolderKanban,
-  BarChart3,
   Settings,
   Plus,
   Edit,
   Trash2,
-  Eye,
   Upload,
   Inbox,
   Image,
@@ -293,8 +291,6 @@ export function Admin() {
 
   const stats = [
     { label: "Total Projects", value: projects.length.toString(), change: "+2 this month" },
-    { label: "Total Views", value: "45.2K", change: "+12.5%" },
-    { label: "Avg. View Time", value: "3m 24s", change: "+8.2%" },
   ];
 
   const { data: messagesData, refetch: refetchMessages } = useAsync(async () => {
@@ -370,7 +366,7 @@ export function Admin() {
 
   // Projects filter and sort state
   const [projectsFilter, setProjectsFilter] = useState<"all" | "published" | "draft">("all");
-  const [projectsSort, setProjectsSort] = useState<"recent" | "views" | "title">("recent");
+  const [projectsSort, setProjectsSort] = useState<"recent" | "title">("recent");
   const [projectsSearch, setProjectsSearch] = useState("");
 
   const { data: workspaceImagesData, refetch: refetchWorkspaceImages } = useAsync(async () => {
@@ -464,8 +460,6 @@ export function Admin() {
     const sorted = [...filtered].sort((a, b) => {
       if (projectsSort === "recent") {
         return new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime();
-      } else if (projectsSort === "views") {
-        return b.views - a.views;
       } else if (projectsSort === "title") {
         return a.title.localeCompare(b.title);
       }
@@ -610,7 +604,6 @@ export function Admin() {
           <div className="flex gap-6">
             {[
               { id: "projects", label: "Projects", icon: FolderKanban },
-              { id: "analytics", label: "Analytics", icon: BarChart3 },
               { id: "inbox", label: "Inbox", icon: Inbox, badge: unreadCount },
               { id: "media", label: "Media", icon: Image },
               { id: "settings", label: "Settings", icon: Settings },
@@ -673,12 +666,11 @@ export function Admin() {
                 </select>
                 <select
                   value={projectsSort}
-                  onChange={(e) => setProjectsSort(e.target.value as "recent" | "views" | "title")}
-                  className="px-4 py-2 rounded-lg bg-accent border border-border focus:border-purple-400 outline-none transition-colors"
+                  onChange={(e) => setProjectsSort(e.target.value as "recent" | "title")}
+                  className="bg-background border border-border px-3 py-2 rounded-lg text-sm w-full md:w-auto"
                 >
                   <option value="recent">Most Recent</option>
-                  <option value="views">Most Views</option>
-                  <option value="title">Alphabetical</option>
+                  <option value="title">Alphabetical (A-Z)</option>
                 </select>
               </div>
 
@@ -726,21 +718,13 @@ export function Admin() {
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
                             <h3 className="text-lg">{project.title}</h3>
-                            <span
-                              className={`px-2 py-1 text-xs rounded-full ${
-                                project.status === "Published"
-                                  ? "bg-emerald-500/20 text-purple-400"
-                                  : "bg-yellow-500/20 text-yellow-400"
-                              }`}
-                            >
-                              {project.status}
-                            </span>
+                            <div className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-accent">
+                              <span className={`w-2 h-2 rounded-full ${project.status === "Published" ? "bg-green-500" : "bg-yellow-500"}`}></span>
+                              <span>{project.status}</span>
+                            </div>
                           </div>
                           <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <Eye size={14} />
-                              {project.views.toLocaleString()} views
-                            </span>
+                            <span>{new Date(project.created_at).toLocaleDateString()}</span>
                             <span>Last updated: {project.lastUpdated}</span>
                           </div>
                         </div>
@@ -763,21 +747,6 @@ export function Admin() {
                   ))}
                 </div>
               )}
-            </div>
-          )}
-
-          {activeTab === "analytics" && (
-            <div className="text-center py-12">
-              <BarChart3
-                className="mx-auto mb-4 text-muted-foreground"
-                size={48}
-              />
-              <h2 className="text-2xl tracking-tight mb-2">
-                Analytics Dashboard
-              </h2>
-              <p className="text-muted-foreground">
-                Detailed analytics and insights coming soon
-              </p>
             </div>
           )}
 
