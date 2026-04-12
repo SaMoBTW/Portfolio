@@ -2,13 +2,6 @@
  * GLOBAL TYPE DEFINITIONS
  * 
  * These types define the data models for the entire application.
- * When implementing Supabase, ensure your database schema matches these types.
- * 
- * SUPABASE INTEGRATION NOTES:
- * - Each type corresponds to a database table
- * - Add `created_at` and `updated_at` timestamps to all tables
- * - Use UUID for `id` fields in production
- * - Implement Row Level Security (RLS) policies for all tables
  */
 
 // ============================================
@@ -32,9 +25,9 @@ export interface Project {
   category: ProjectCategory;
   
   // Optional fields added in admin
-  demoVideoUrl?: string; // Match DB column
-  completionDate?: string; // Match DB column
-  featuredOnHomepage?: boolean; // Match DB column
+  demoVideoUrl?: string;
+  completionDate?: string;
+  featuredOnHomepage?: boolean;
 }
 
 export type ProjectStatus = "Published" | "Draft";
@@ -68,17 +61,14 @@ export interface ProjectFormData {
 // ============================================
 
 export interface Message {
-  id: number; // TODO: Change to string (UUID) when implementing Supabase
+  id: string; // Updated to UUID string for Supabase
   name: string;
   email: string;
   subject: string;
   message: string;
   date: string; // ISO date string
   unread: boolean;
-  
-  // TODO: Add these fields for Supabase implementation
-  // created_at?: string;
-  // user_id?: string; // Reference to admin user
+  created_at?: string;
 }
 
 // ============================================
@@ -86,26 +76,20 @@ export interface Message {
 // ============================================
 
 export interface WorkspaceImage {
-  id: number; // TODO: Change to string (UUID) when implementing Supabase
+  id: string; // Updated to UUID string for Supabase
   url: string;
   alt?: string;
   order?: number; // For sorting images
-  
-  // TODO: Add for Supabase
-  // created_at?: string;
-  // file_size?: number;
-  // file_type?: string;
+  created_at?: string;
 }
 
 export interface Album {
-  id: number; // TODO: Change to string (UUID) when implementing Supabase
+  id: string; // Updated to UUID string for Supabase
   url: string;
   title: string;
   artist?: string;
   order?: number; // For sorting albums
-  
-  // TODO: Add for Supabase
-  // created_at?: string;
+  created_at?: string;
 }
 
 // ============================================
@@ -113,7 +97,7 @@ export interface Album {
 // ============================================
 
 export interface SiteSettings {
-  id?: number; // TODO: Change to string (UUID) when implementing Supabase
+  id?: string; // Updated to UUID string for Supabase
   name: string;
   tagline: string;
   bio: string;
@@ -121,13 +105,9 @@ export interface SiteSettings {
   githubUrl: string;
   linkedinUrl: string;
   twitterUrl: string;
-  
-  // TODO: Add for Supabase
-  // updated_at?: string;
-  // user_id?: string; // Reference to admin user
+  updated_at?: string;
+  user_id?: string;
 }
-
-
 
 // ============================================
 // AUTHENTICATION TYPES
@@ -137,11 +117,6 @@ export interface User {
   id: string; // Supabase UUID
   email: string;
   created_at?: string;
-  
-  // Supabase Auth will provide additional fields:
-  // - app_metadata
-  // - user_metadata
-  // - role
 }
 
 export interface AuthState {
@@ -151,37 +126,10 @@ export interface AuthState {
 }
 
 // ============================================
-// API RESPONSE TYPES
-// ============================================
-
-/**
- * Standard API response wrapper
- * Use this pattern for all Supabase queries
- */
-export interface ApiResponse<T> {
-  data: T | null;
-  error: ApiError | null;
-  loading: boolean;
-}
-
-export interface ApiError {
-  message: string;
-  code?: string;
-  details?: any;
-}
-
-// ============================================
 // FORM VALIDATION TYPES
 // ============================================
 
 export interface ValidationError {
   field: string;
   message: string;
-}
-
-export interface FormState<T> {
-  data: T;
-  errors: ValidationError[];
-  isSubmitting: boolean;
-  isDirty: boolean;
 }

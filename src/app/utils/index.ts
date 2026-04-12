@@ -1,8 +1,5 @@
 /**
- * UTILITY FUNCTIONS
- * 
  * Reusable helper functions for common operations.
- * These will be useful when implementing Supabase integration.
  */
 
 import { VALIDATION } from '../constants';
@@ -285,18 +282,6 @@ export function isSupabaseError(error: unknown): error is { message: string; cod
 // ============================================
 
 /**
- * Basic HTML sanitization to prevent XSS attacks
- * For production, use a library like DOMPurify
- * 
- * TODO: Install and use DOMPurify for production
- */
-export function sanitizeHtml(html: string): string {
-  const temp = document.createElement('div');
-  temp.textContent = html;
-  return temp.innerHTML;
-}
-
-/**
  * Sanitizes user input by removing dangerous characters
  */
 export function sanitizeInput(input: string): string {
@@ -304,3 +289,4 @@ export function sanitizeInput(input: string): string {
     .replace(/[<>]/g, '') // Remove angle brackets
     .trim();
 }
+

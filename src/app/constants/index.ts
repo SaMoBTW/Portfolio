@@ -14,10 +14,7 @@
 // ============================================
 
 /**
- * TODO: Set these in your environment variables (.env.local)
- * 
- * VITE_SUPABASE_URL=your-project-url.supabase.co
- * VITE_SUPABASE_ANON_KEY=your-anon-key
+ * Supabase configuration from environment variables.
  */
 export const SUPABASE_CONFIG = {
   url: import.meta.env.VITE_SUPABASE_URL || '',

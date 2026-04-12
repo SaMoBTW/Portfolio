@@ -27,8 +27,7 @@ import { toast } from "sonner";
 import { useAuth, useAsync } from "../hooks";
 import { supabase } from "../lib/supabase";
 
-// TODO: Import types once Supabase is integrated
-// import { Project, Message, WorkspaceImage, Album, SiteSettings } from "../types";
+import { Project, Message, WorkspaceImage, Album, SiteSettings } from "../types";
 
 export function Admin() {
   const { session, loading: authLoading, signIn, signOut } = useAuth();

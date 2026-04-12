@@ -1,8 +1,5 @@
 /**
- * CUSTOM REACT HOOKS
- * 
  * Reusable hooks for common patterns.
- * These hooks will be especially useful when integrating with Supabase.
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -106,13 +103,7 @@ export function useForm<T extends Record<string, any>>(
 // ============================================
 
 /**
- * Hook for fetching data with loading and error states
- * Perfect for Supabase queries
- * 
- * Usage:
- * const { data, loading, error, refetch } = useAsync(
- *   () => supabase.from('projects').select('*')
- * );
+ * Hook for fetching data with loading and error states.
  */
 export function useAsync<T>(
   asyncFunction: () => Promise<T>,
