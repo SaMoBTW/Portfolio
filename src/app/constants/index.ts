@@ -64,7 +64,8 @@ export const ROUTES = {
   ABOUT: '/about',
   EXPERIENCE: '/experience',
   PROJECTS: '/projects',
-  ADMIN: '/admin',
+  /** Unlinked CMS URL — bookmark this path; not shown in site navigation */
+  ADMIN: '/ops/workspace',
   NOT_FOUND: '*',
 } as const;
 

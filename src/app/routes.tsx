@@ -18,7 +18,7 @@ export const router = createBrowserRouter([
       { path: "experience", Component: Experience },
       { path: "projects", Component: Projects },
       { path: "projects/:projectId", Component: ProjectDetail },
-      { path: "admin", Component: Admin },
+      { path: "ops/workspace", Component: Admin },
       { path: "*", Component: NotFound },
     ],
   },

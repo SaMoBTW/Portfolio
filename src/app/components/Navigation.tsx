@@ -11,7 +11,6 @@ export function Navigation() {
     { path: "/about", label: "<ABOUT />" },
     { path: "/experience", label: "<EXPERIENCE />" },
     { path: "/projects", label: "<PROJECTS />" },
-    { path: "/admin", label: "<ADMIN />" },
   ];
 
   const isActive = (path: string) => {
