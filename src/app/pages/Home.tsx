@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { ArrowRight, Check } from "lucide-react";
 import { Link } from "react-router";
-import profileImg from "../../assets/d7db82655c6674b4948dd2ab7cad4334dee31f29.png";
+import profileImg from "../../assets/profile.jpg";
 import { useAsync } from "../hooks";
 import { supabase } from "../lib/supabase";
 import { TerminalVisual } from "../components/TerminalVisual";
@@ -296,16 +296,14 @@ export function Home() {
                   }}
                 >
                   <div
-                    className="relative w-full rounded overflow-hidden border border-primary/50 bg-primary/10"
+                    className="relative w-full rounded overflow-hidden border border-primary/50"
                     style={{ aspectRatio: "3/4" }}
                   >
                     <img
                       src={profileImg}
                       alt="Samir Mahmoud"
-                      className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-300"
+                      className="w-full h-full object-cover transition-all duration-300"
                     />
-                    {/* Purple overlay */}
-                    <div className="absolute inset-0 bg-primary/20 mix-blend-multiply group-hover:bg-transparent transition-all duration-300"></div>
                   </div>
                 </div>
               </motion.div>

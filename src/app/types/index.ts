@@ -92,6 +92,17 @@ export interface Album {
   created_at?: string;
 }
 
+export interface Creator {
+  id: string; // UUID string for Supabase
+  name: string;
+  description?: string;
+  influence_description?: string;
+  channel_url?: string;
+  avatar_url?: string;
+  order_index?: number;
+  created_at?: string;
+}
+
 // ============================================
 // SETTINGS TYPES
 // ============================================

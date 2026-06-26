@@ -35,6 +35,7 @@ export const TABLES = {
   WORKSPACE_IMAGES: 'workspace_images',
   ALBUMS: 'albums',
   SITE_SETTINGS: 'site_settings',
+  CREATORS: 'creators',
 } as const;
 
 // ============================================
@@ -49,6 +50,7 @@ export const STORAGE_BUCKETS = {
   PROJECT_IMAGES: 'project-images',
   WORKSPACE_IMAGES: 'workspace-images',
   ALBUM_COVERS: 'album-covers',
+  CREATOR_AVATARS: 'creator-avatars',
 } as const;
 
 // ============================================

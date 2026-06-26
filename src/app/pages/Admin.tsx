@@ -27,7 +27,7 @@ import { toast } from "sonner";
 import { useAuth, useAsync } from "../hooks";
 import { supabase } from "../lib/supabase";
 
-import { Project, Message, WorkspaceImage, Album, SiteSettings } from "../types";
+import { Project, Message, WorkspaceImage, Album, SiteSettings, Creator } from "../types";
 
 export function Admin() {
   const { session, loading: authLoading, signIn, signOut } = useAuth();
@@ -46,6 +46,7 @@ export function Admin() {
   const [isUploading, setIsUploading] = useState(false);
   const [isWorkspaceUploading, setIsWorkspaceUploading] = useState(false);
   const [albumUploadingId, setAlbumUploadingId] = useState<number | null>(null);
+  const [creatorUploadingId, setCreatorUploadingId] = useState<string | null>(null);
 
   // ============================================
   // PROJECTS STATE
@@ -432,6 +433,34 @@ export function Admin() {
       toast.error("Failed to upload album cover", { description: err.message });
     } finally {
       setAlbumUploadingId(null);
+    }
+  };
+
+  const { data: creatorsData, refetch: refetchCreators } = useAsync(async () => {
+    const { data, error } = await supabase.from('creators').select('*').order('order_index', { ascending: true });
+    if (error) throw error;
+    return data || [];
+  }, [], { skip: !isAuthenticated });
+  const creators = creatorsData || [];
+
+  const handleCreatorUpload = async (e: React.ChangeEvent<HTMLInputElement>, creatorId: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setCreatorUploadingId(creatorId);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+      const { error: uploadError } = await supabase.storage.from('creator-avatars').upload(fileName, file);
+      if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage.from('creator-avatars').getPublicUrl(fileName);
+      const { error: updateError } = await supabase.from('creators').update({ avatar_url: publicUrl }).eq('id', creatorId);
+      if (updateError) throw updateError;
+      toast.success("Creator avatar uploaded!");
+      await refetchCreators();
+    } catch(err: any) {
+      toast.error("Failed to upload avatar", { description: err.message });
+    } finally {
+      setCreatorUploadingId(null);
     }
   };
 
@@ -971,6 +1000,162 @@ export function Admin() {
                   >
                     <Plus size={18} />
                     Add Album
+                  </button>
+                </div>
+              </div>
+
+              {/* Creative Influences Section */}
+              <div className="mt-12 border-t border-border/50 pt-8">
+                <h3 className="text-lg mb-4 flex items-center gap-2">
+                  <span className="text-primary/60 font-mono text-sm">&lt;CreativeInfluences /&gt;</span>
+                  Creative Influences
+                </h3>
+
+                <div className="space-y-4">
+                  {creators.map((creator: Creator) => (
+                    <div key={creator.id} className="p-5 rounded-lg border border-border/50 bg-card flex flex-col md:flex-row items-start md:items-center gap-4">
+                      {/* Avatar Display */}
+                      <div className="w-16 h-16 rounded-full border border-border/50 overflow-hidden bg-accent flex items-center justify-center flex-shrink-0">
+                        {creator.avatar_url ? (
+                          <img src={creator.avatar_url} alt={creator.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="font-bold text-lg text-primary">{creator.name ? creator.name.charAt(0) : '?'}</span>
+                        )}
+                      </div>
+
+                      {/* Inputs Column */}
+                      <div className="flex-1 w-full grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-xs text-muted-foreground mb-1 block">Creator Name</label>
+                          <input
+                            type="text"
+                            defaultValue={creator.name}
+                            onBlur={async (e) => {
+                              if (e.target.value !== creator.name) {
+                                try {
+                                  const { error } = await supabase.from('creators').update({ name: e.target.value }).eq('id', creator.id);
+                                  if (error) throw error;
+                                  refetchCreators();
+                                } catch (err: any) {
+                                  toast.error("Failed to update creator name", { description: err.message });
+                                }
+                              }
+                            }}
+                            className="w-full px-3 py-1.5 rounded bg-accent border border-border focus:border-purple-400 outline-none transition-colors text-sm"
+                            placeholder="Creator Name"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-xs text-muted-foreground mb-1 block">Role / Description</label>
+                          <input
+                            type="text"
+                            defaultValue={creator.description || ''}
+                            onBlur={async (e) => {
+                              if (e.target.value !== creator.description) {
+                                try {
+                                  const { error } = await supabase.from('creators').update({ description: e.target.value }).eq('id', creator.id);
+                                  if (error) throw error;
+                                  refetchCreators();
+                                } catch (err: any) {
+                                  toast.error("Failed to update role/description", { description: err.message });
+                                }
+                              }
+                            }}
+                            className="w-full px-3 py-1.5 rounded bg-accent border border-border focus:border-purple-400 outline-none transition-colors text-sm"
+                            placeholder="e.g. Systems Engineer & Educator"
+                          />
+                        </div>
+
+                        <div className="md:col-span-2">
+                          <label className="text-xs text-muted-foreground mb-1 block">Channel / Website URL</label>
+                          <input
+                            type="text"
+                            defaultValue={creator.channel_url || ''}
+                            onBlur={async (e) => {
+                              if (e.target.value !== creator.channel_url) {
+                                try {
+                                  const { error } = await supabase.from('creators').update({ channel_url: e.target.value }).eq('id', creator.id);
+                                  if (error) throw error;
+                                  refetchCreators();
+                                } catch (err: any) {
+                                  toast.error("Failed to update channel URL", { description: err.message });
+                                }
+                              }
+                            }}
+                            className="w-full px-3 py-1.5 rounded bg-accent border border-border focus:border-purple-400 outline-none transition-colors text-sm"
+                            placeholder="e.g. https://www.youtube.com/@Channel"
+                          />
+                        </div>
+
+                        <div className="md:col-span-2">
+                          <label className="text-xs text-muted-foreground mb-1 block">Why they inspire you (Influence Notes)</label>
+                          <textarea
+                            defaultValue={creator.influence_description || ''}
+                            onBlur={async (e) => {
+                              if (e.target.value !== creator.influence_description) {
+                                try {
+                                  const { error } = await supabase.from('creators').update({ influence_description: e.target.value }).eq('id', creator.id);
+                                  if (error) throw error;
+                                  refetchCreators();
+                                } catch (err: any) {
+                                  toast.error("Failed to update influence notes", { description: err.message });
+                                }
+                              }
+                            }}
+                            className="w-full px-3 py-1.5 rounded bg-accent border border-border focus:border-purple-400 outline-none transition-colors text-sm resize-none"
+                            placeholder="Describe how this creator has influenced your workflow or thinking..."
+                            rows={2}
+                          />
+                        </div>
+
+                        <div className="md:col-span-2">
+                          <label className="relative inline-flex items-center justify-center cursor-pointer bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 rounded-lg px-3 py-1.5 transition-colors text-xs font-medium w-full md:w-auto">
+                            <input type="file" accept="image/*" className="hidden" onChange={(e) => handleCreatorUpload(e, creator.id)} disabled={creatorUploadingId === creator.id} />
+                            {creatorUploadingId === creator.id ? (
+                              <><Loader2 className="animate-spin text-primary mr-1.5" size={12}/> Uploading...</>
+                            ) : (
+                              <><Upload size={12} className="mr-1.5"/> Upload Avatar Image</>
+                            )}
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Delete Button */}
+                      <button
+                        onClick={async () => {
+                          try {
+                            const { error } = await supabase.from('creators').delete().eq('id', creator.id);
+                            if (error) throw error;
+                            toast.success("Creator removed");
+                            await refetchCreators();
+                          } catch (err: any) {
+                            toast.error("Failed to remove creator", { description: err.message });
+                          }
+                        }}
+                        className="p-2 rounded-lg hover:bg-destructive/20 text-destructive transition-colors self-end md:self-center"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  ))}
+
+                  <button
+                    onClick={async () => {
+                      try {
+                        const newName = "New Creator";
+                        const { error } = await supabase.from('creators').insert([{ name: newName, order_index: creators.length }]);
+                        if (error) throw error;
+                        toast.success("Creator added");
+                        await refetchCreators();
+                      } catch (err: any) {
+                        toast.error("Failed to add creator", { description: err.message });
+                      }
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border hover:bg-accent transition-colors mt-2"
+                  >
+                    <Plus size={18} />
+                    Add Creator
                   </button>
                 </div>
               </div>
