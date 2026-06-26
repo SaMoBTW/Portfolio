@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import Masonry from "react-responsive-masonry";
-import { FileCode } from "lucide-react";
-import profileImg from "../../assets/d7db82655c6674b4948dd2ab7cad4334dee31f29.png";
+import { FileCode, Youtube, ExternalLink } from "lucide-react";
+import profileImg from "../../assets/profile.jpg";
 import { useAsync } from "../hooks";
 import { supabase } from "../lib/supabase";
 
@@ -26,15 +26,69 @@ export function About() {
   });
   const albums = albumsData || [];
 
-  // Tech creator avatars
-  const creators = [
-    { name: "Linus Tech Tips" },
-    { name: "Fireship" },
-    { name: "ThePrimeagen" },
-    { name: "Theo" },
-    { name: "NetworkChuck" },
-    { name: "Jeff Geerling" },
+  // Fetch creators dynamically
+  const { data: dbCreators } = useAsync(async () => {
+    const { data, error } = await supabase
+      .from("creators")
+      .select("*")
+      .order("order_index", { ascending: true });
+    if (error) throw error;
+    return data || [];
+  });
+
+  // Tech creator fallback list with rich details
+  const fallbackCreators = [
+    {
+      id: "linus",
+      name: "Linus Tech Tips",
+      description: "Tech hardware, testing, and industry news.",
+      influence_description: "Taught me how to break down complex technical topics and make systems architecture engaging.",
+      channel_url: "https://www.youtube.com/@LinusTechTips",
+      avatar_url: undefined,
+    },
+    {
+      id: "fireship",
+      name: "Fireship",
+      description: "Code tutorials and high-speed tech news.",
+      influence_description: "Inspired my concise, direct communication style and drive to learn and prototype with new technologies quickly.",
+      channel_url: "https://www.youtube.com/@Fireship",
+      avatar_url: undefined,
+    },
+    {
+      id: "primeagen",
+      name: "ThePrimeagen",
+      description: "Systems engineer and terminal advocate.",
+      influence_description: "Inspired my keyboard-driven terminal workflow, passion for data structures, and focus on low-level system performance.",
+      channel_url: "https://www.youtube.com/@ThePrimeagen",
+      avatar_url: undefined,
+    },
+    {
+      id: "theo",
+      name: "Theo - t3.gg",
+      description: "Founder & builder discussing web infrastructure.",
+      influence_description: "Helped shape my mental model of modern React/TypeScript ecosystems and deployment platforms.",
+      channel_url: "https://www.youtube.com/@t3dotgg",
+      avatar_url: undefined,
+    },
+    {
+      id: "networkchuck",
+      name: "NetworkChuck",
+      description: "IT, networking, and home lab educator.",
+      influence_description: "Ignited my passion for setting up my home media server, networking, and virtualization with Docker.",
+      channel_url: "https://www.youtube.com/@NetworkChuck",
+      avatar_url: undefined,
+    },
+    {
+      id: "jeff",
+      name: "Jeff Geerling",
+      description: "Infrastructure developer and author.",
+      influence_description: "Inspired my focus on automation, automated setups, and clean hardware cluster engineering.",
+      channel_url: "https://www.youtube.com/@JeffGeerling",
+      avatar_url: undefined,
+    },
   ];
+
+  const creators = dbCreators && dbCreators.length > 0 ? dbCreators : fallbackCreators;
 
   return (
     <div className="pt-20">
@@ -135,14 +189,12 @@ export function About() {
                         "inset 0 0 40px rgba(167, 139, 250, 0.15), 0 0 30px rgba(167, 139, 250, 0.2)",
                     }}
                   >
-                    <div className="relative w-full rounded overflow-hidden border border-primary/50 bg-primary/10">
+                    <div className="relative w-full rounded overflow-hidden border border-primary/50">
                       <img
                         src={profileImg}
                         alt="Samir Mahmoud"
-                        className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-300"
+                        className="w-full h-full object-cover transition-all duration-300"
                       />
-                      {/* Purple overlay */}
-                      <div className="absolute inset-0 bg-primary/10 mix-blend-multiply group-hover:bg-transparent transition-all duration-300"></div>
                     </div>
                   </div>
                 </motion.div>
@@ -256,7 +308,7 @@ export function About() {
                 <img
                   src={album.url}
                   alt={album.title}
-                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                  className="w-full h-full object-cover transition-all duration-500"
                 />
               </div>
             ))}
@@ -272,7 +324,7 @@ export function About() {
                 <img
                   src={album.url}
                   alt={album.title}
-                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                  className="w-full h-full object-cover transition-all duration-500"
                 />
               </div>
             ))}
@@ -300,36 +352,86 @@ export function About() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {creators.map((creator, index) => (
               <motion.div
-                key={index}
+                key={creator.id || index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
-                className="group relative rounded-lg border border-border/50 bg-background/80 backdrop-blur-xl p-6 hover:border-primary/50 transition-all duration-300"
+                whileHover={{ y: -6, scale: 1.02 }}
+                className="group relative rounded-lg border border-border/50 bg-background/80 backdrop-blur-xl p-6 hover:border-primary/50 transition-all duration-300 flex flex-col justify-between"
                 style={{
                   boxShadow:
-                    "0 4px 16px rgba(0, 0, 0, 0.3), inset 0 0 40px rgba(167, 139, 250, 0.05)",
+                    "0 4px 16px rgba(0, 0, 0, 0.3), inset 0 0 40px rgba(167, 139, 250, 0.03)",
+                }}
+                onMouseEnter={(e: any) => {
+                  e.currentTarget.style.boxShadow =
+                    "0 12px 30px -10px rgba(167, 139, 250, 0.35), inset 0 0 40px rgba(167, 139, 250, 0.08)";
+                }}
+                onMouseLeave={(e: any) => {
+                  e.currentTarget.style.boxShadow =
+                    "0 4px 16px rgba(0, 0, 0, 0.3), inset 0 0 40px rgba(167, 139, 250, 0.03)";
                 }}
               >
-                {/* Avatar Placeholder */}
-                <div className="flex justify-center mb-4">
-                  <div
-                    className="w-20 h-20 rounded-full border-2 border-primary/40 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center group-hover:border-primary transition-all duration-300"
-                    style={{
-                      boxShadow:
-                        "inset 0 0 30px rgba(167, 139, 250, 0.2), 0 0 20px rgba(167, 139, 250, 0.2)",
-                    }}
-                  >
-                    <span className="text-primary font-mono text-lg font-bold">
-                      {creator.name.split(" ")[0].charAt(0)}
-                    </span>
+                <div>
+                  {/* Avatar image / initials */}
+                  <div className="flex justify-center mb-4">
+                    <div
+                      className="w-20 h-20 rounded-full border-2 border-primary/40 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center group-hover:border-primary overflow-hidden transition-all duration-300"
+                      style={{
+                        boxShadow:
+                          "inset 0 0 30px rgba(167, 139, 250, 0.15), 0 0 20px rgba(167, 139, 250, 0.1)",
+                      }}
+                    >
+                      {creator.avatar_url ? (
+                        <img
+                          src={creator.avatar_url}
+                          alt={creator.name}
+                          className="w-full h-full object-cover transition-all duration-300"
+                        />
+                      ) : (
+                        <span className="text-primary font-mono text-xl font-bold">
+                          {creator.name.split(" ")[0].charAt(0)}
+                        </span>
+                      )}
+                    </div>
                   </div>
+
+                  {/* Creator Name */}
+                  <h3 className="text-center text-foreground font-bold text-lg group-hover:text-primary transition-colors duration-300">
+                    {creator.name}
+                  </h3>
+
+                  {/* Creator Description/Role */}
+                  {creator.description && (
+                    <p className="text-center text-primary/70 text-xs font-medium mt-1">
+                      {creator.description}
+                    </p>
+                  )}
+
+                  {/* Divider */}
+                  {creator.channel_url && (
+                    <div className="h-px bg-border/40 my-4" />
+                  )}
                 </div>
 
-                {/* Creator Name */}
-                <h3 className="text-center text-foreground font-bold text-lg">
-                  {creator.name}
-                </h3>
+                {/* Creator Channel / Website Link */}
+                {creator.channel_url && (
+                  <div className="mt-5 flex justify-center">
+                    <a
+                      href={creator.channel_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-4.5 py-1.5 rounded-full text-xs font-mono font-medium text-slate-300 hover:text-white bg-slate-900/50 hover:bg-primary/20 border border-border hover:border-primary/50 transition-all duration-300"
+                    >
+                      {creator.channel_url.includes("youtube.com") || creator.channel_url.includes("youtu.be") ? (
+                        <Youtube className="w-3.5 h-3.5 text-red-500" />
+                      ) : (
+                        <ExternalLink className="w-3.5 h-3.5 text-primary" />
+                      )}
+                      Explore Channel
+                    </a>
+                  </div>
+                )}
               </motion.div>
             ))}
           </div>
