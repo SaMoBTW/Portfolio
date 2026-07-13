@@ -31,10 +31,8 @@ export function Projects() {
               </h1>
               <div className="flex-1 h-px bg-border ml-4"></div>
             </div>
-            <p className="text-muted-foreground text-lg max-w-2xl leading-relaxed">
-              A collection of projects I've worked on, ranging from web applications
-              to open source tools. Each one tells a story of problem-solving and
-              innovation.
+            <p className="text-muted-foreground text-lg max-w-1xl leading-relaxed">
+              A collection of projects I've worked on, ranging from web applications to personal projects.
             </p>
           </motion.div>
         </div>
