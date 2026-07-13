@@ -158,17 +158,17 @@ export function About() {
                         <p>
                           I'm a software engineer who believes that the best
                           code is clean, intentional, and built with purpose. I
-                          love diving deep into systems architecture, whether
-                          it's optimizing a microservice or building out my home
-                          media server with Docker and Plex.
+                          love tech, whether it's optimizing a microservice or messing with my home server.
                         </p>
                         <p>
-                          Beyond the terminal, I'm fascinated by the
-                          intersection of tech and culture—how music, art, and
-                          storytelling shape the way we build and interact with
-                          technology. When I'm not writing code, you'll find me
-                          exploring new music, tweaking my workspace setup, or
-                          learning from the creators who inspire me.
+                          I'm originally from Khartoum, Sudan, and moved to the U.S. in 2023 to finish my bachelor's degree in
+                          computer information systems at Bemidji State University, and shortly after that I moved to Maryland
+                          to pursue my master's degree in Computer Science.
+                        </p>
+                        <p>
+                          When I'm not writing code, you'll find me
+                          exploring new music, tweaking my workspace setup, watching YouTube or
+                          dominating competitive games.
                         </p>
                       </div>
                     </div>

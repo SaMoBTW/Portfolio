@@ -31,7 +31,7 @@ export function Home() {
   const settings = settingsData || {
     name: "Samir Mahmoud.",
     tagline: "I build things for the web.",
-    bio: "I'm a software engineer specializing in building and designing exceptional digital experiences. Currently, I'm focused on building accessible, human-centered products.",
+    bio: "I'm a software engineer specializing in building and designing exceptional digital experiences.",
   };
 
   return (
@@ -209,10 +209,8 @@ export function Home() {
                 style={{ lineHeight: "1.6" }}
               >
                 <p>
-                  Hello! I'm a passionate developer and designer with a love for
-                  creating digital experiences that make a difference. My
-                  journey in tech started with curiosity and has evolved into a
-                  career building solutions that people genuinely enjoy using.
+                  Hello! I'm a passionate developer with a love for
+                  creating digital experiences that feel polished and professional.
                 </p>
                 <p>
                   I specialize in crafting responsive, accessible web
