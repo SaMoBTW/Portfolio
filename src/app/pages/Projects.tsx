@@ -31,7 +31,7 @@ export function Projects() {
               </h1>
               <div className="flex-1 h-px bg-border ml-4"></div>
             </div>
-            <p className="text-muted-foreground text-lg max-w-1xl leading-relaxed">
+            <p className="text-muted-foreground text-lg max-w-xl leading-relaxed">
               A collection of projects I've worked on, ranging from web applications to personal projects.
             </p>
           </motion.div>
