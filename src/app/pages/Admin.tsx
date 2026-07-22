@@ -1296,7 +1296,7 @@ export function Admin() {
                   <option value="Mobile App">Mobile App</option>
                   <option value="Design">Design</option>
                   <option value="Productivity">Productivity</option>
-                  <option value="E-Commerce">E-Commerce</option>
+                  <option value="Cloud">Cloud</option>
                   <option value="Other">Other</option>
                 </select>
               </div>
