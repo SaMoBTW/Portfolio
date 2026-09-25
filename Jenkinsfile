@@ -61,7 +61,7 @@ spec:
         container('git') {
           sshagent(['homelab-config-deploy-key']) {
             sh '''
-              mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
+              export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
               git clone git@github.com:SaMoBTW/homelab-config.git /tmp/config
               cd /tmp/config
               sed -i "s|image: ghcr.io/samobtw/portfolio:.*|image: ${IMAGE}:${GIT_COMMIT}|" manifests/portfolio/deployment.yaml
@@ -76,3 +76,4 @@ spec:
     }
   }
 }
+
