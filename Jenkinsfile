@@ -10,6 +10,9 @@ spec:
     image: gcr.io/kaniko-project/executor:debug
     command: ["sleep"]
     args: ["9999999"]
+    securityContext:
+      runAsUser: 0
+      readOnlyRootFilesystem: false
     volumeMounts:
     - name: docker-config
       mountPath: /kaniko/.docker
