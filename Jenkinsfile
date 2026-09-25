@@ -38,7 +38,7 @@ spec:
       steps {
         container('kaniko') {
           sh '''
-            /kaniko/executor --context `pwd` --dockerfile Dockerfile --destination ${IMAGE}:${GIT_COMMIT}
+            /kaniko/executor --context `pwd` --dockerfile Dockerfile --destination ${IMAGE}:${GIT_COMMIT} --verbosity=debug
           '''
         }
       }
