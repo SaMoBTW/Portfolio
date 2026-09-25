@@ -6,16 +6,25 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
-  - name: kaniko
-    image: gcr.io/kaniko-project/executor:debug
+  - name: buildkit
+    image: moby/buildkit:v0.17.2-rootless
     command: ["sleep"]
     args: ["9999999"]
     securityContext:
-      runAsUser: 0
-      readOnlyRootFilesystem: false
+      runAsUser: 1000
+      runAsGroup: 1000
+      seccompProfile:
+        type: Unconfined
+      appArmorProfile:
+        type: Unconfined
+    env:
+    - name: BUILDKITD_FLAGS
+      value: --oci-worker-no-process-sandbox
+    - name: DOCKER_CONFIG
+      value: /home/user/.docker
     volumeMounts:
     - name: docker-config
-      mountPath: /kaniko/.docker
+      mountPath: /home/user/.docker
   - name: git
     image: alpine/git:latest
     command: ["sleep"]
@@ -36,9 +45,13 @@ spec:
   stages {
     stage('Build and push') {
       steps {
-        container('kaniko') {
+        container('buildkit') {
           sh '''
-            /kaniko/executor --context `pwd` --dockerfile Dockerfile --destination ${IMAGE}:${GIT_COMMIT} --verbosity=debug
+            buildctl-daemonless.sh build \
+              --frontend dockerfile.v0 \
+              --local context=. \
+              --local dockerfile=. \
+              --output type=image,name=${IMAGE}:${GIT_COMMIT},push=true
           '''
         }
       }
